@@ -1,5 +1,6 @@
 <!--
 Copyright (c) Github Speckit
+Modified by Trentin Barnard, 2025
 MIT License
 -->
 
@@ -70,8 +71,10 @@ When creating this spec from a user prompt:
 
 ### Acceptance Scenarios
 
-1. **Given** [initial state], **When** [action], **Then** [expected outcome]
-2. **Given** [initial state], **When** [action], **Then** [expected outcome]
+### Acceptance Scenarios
+
+- **AS-001**: **Given** [initial state], **When** [action], **Then** [expected outcome]
+- **AS-002**: **Given** [initial state], **When** [action], **Then** [expected outcome]
 
 ### Edge Cases
 
