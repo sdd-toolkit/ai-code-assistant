@@ -78,8 +78,12 @@ When creating this spec from a user prompt:
 
 ### Edge Cases
 
-- What happens when [boundary condition]?
-- How does system handle [error scenario]?
+- **EC-001**:
+  - What happens when [boundary condition]?
+  - How does system handle [error scenario]?
+- **EC-002**:
+  - What happens when [boundary condition]?
+  - How does system handle [error scenario]?
 
 ## Requirements _(mandatory)_
 

@@ -70,7 +70,7 @@ if (-not (Test-Path ".specify")) {
 }
 
 # Ensure required directories exist
-New-Item -ItemType Directory -Force -Path (Join-Path ".specify" "memory") | Out-Nullche
+New-Item -ItemType Directory -Force -Path (Join-Path ".specify" "memory") | Out-Null
 New-Item -ItemType Directory -Force -Path "specs" | Out-Null
 
 # Cleanup
