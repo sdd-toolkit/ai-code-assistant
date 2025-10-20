@@ -69,12 +69,10 @@ When creating this spec from a user prompt:
 
 [Describe the main user journey in plain language]
 
-### Acceptance Scenarios
+### Acceptance Criteria
 
-### Acceptance Scenarios
-
-- **AS-001**: **Given** [initial state], **When** [action], **Then** [expected outcome]
-- **AS-002**: **Given** [initial state], **When** [action], **Then** [expected outcome]
+- **AC-001**: **Given** [initial state], **When** [action], **Then** [expected outcome]
+- **AC-002**: **Given** [initial state], **When** [action], **Then** [expected outcome]
 
 ### Edge Cases
 
