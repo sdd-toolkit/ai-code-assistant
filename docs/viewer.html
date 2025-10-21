@@ -241,6 +241,16 @@
           📊 Overview
         </button>
         <button
+          id="tab-init"
+          class="nav-tab"
+          role="tab"
+          aria-selected="false"
+          aria-controls="diagram-init"
+          data-target="diagram-init"
+        >
+          🏗️ @sdd-init
+        </button>
+        <button
           id="tab-specify"
           class="nav-tab"
           role="tab"
@@ -365,6 +375,75 @@ flowchart TD
     style implement fill:#fce4ec
         </pre
           >
+        </div>
+      </div>
+
+      <!-- @sdd-init Diagram -->
+      <div id="diagram-init" class="diagram-container" role="tabpanel" aria-labelledby="tab-init" hidden>
+        <h2 class="diagram-title">@sdd-init - Initialize/Update Constitution</h2>
+        <p class="diagram-description">
+          Create or update the project constitution with modular template/instance separation. Manages governance
+          standards for technology stack, architecture, testing, security, and observability.
+        </p>
+        <div class="diagram-content">
+          <pre class="mermaid">
+flowchart TD
+    Start([User runs @sdd-init or @sdd-init core]) --> CheckFiles{Constitution files<br/>exist in memory?}
+
+    CheckFiles -->|No files| InitializeAll[Initialize Constitution System<br/>Create memory/constitution/]
+    CheckFiles -->|Files exist| AskUser[Ask which files to update<br/>core, architecture, testing,<br/>security, observability, optional]
+
+    InitializeAll --> CopyTemplates[Copy templates to memory<br/>Remove template suffix<br/>Create constitution files]
+
+    CopyTemplates --> CheckGitWorkflow{Git workflow<br/>exists?}
+
+    CheckGitWorkflow -->|No| CopyGitWorkflow[Copy git-workflow-template.md<br/>to memory/git-workflow.md]
+    CheckGitWorkflow -->|Yes| InformUser
+
+    CopyGitWorkflow --> InformUser[Inform user<br/>Constitution initialized]
+
+    InformUser --> IdentifyPlaceholders
+
+    AskUser --> SelectFiles{User specifies<br/>files?}
+
+    SelectFiles -->|No specification| DefaultCore[Default to core.md]
+    SelectFiles -->|Specified| LoadTarget[Load target files]
+
+    DefaultCore --> CheckGitWorkflow2{Git workflow<br/>exists?}
+    LoadTarget --> CheckGitWorkflow2
+
+    CheckGitWorkflow2 -->|No| CopyGitWorkflow2[Copy git-workflow-template.md]
+    CheckGitWorkflow2 -->|Yes| IdentifyPlaceholders
+
+    CopyGitWorkflow2 --> IdentifyPlaceholders[Identify placeholders<br/>ALL_CAPS_IDENTIFIER patterns<br/>Respect user principle count]
+
+    IdentifyPlaceholders --> CollectValues[Collect placeholder values<br/>User input, Repo context,<br/>Prior versions, Governance dates]
+
+    CollectValues --> DetermineVersion[Determine version bump<br/>MAJOR, MINOR, or PATCH]
+
+    DetermineVersion --> DraftContent[Draft updated content<br/>Replace all placeholders<br/>Preserve heading hierarchy<br/>Ensure declarative principles]
+
+    DraftContent --> ValidateContent{Validation<br/>checks pass?}
+
+    ValidateContent -->|No| ErrorValidation[ERROR: Validation failed<br/>Fix placeholders, version,<br/>date format, vague language]
+
+    ValidateContent -->|Yes| CheckConsistency[Check consistency across<br/>plan-template, spec-template,<br/>tasks-template, commands]
+
+    CheckConsistency --> GenerateReport[Generate Sync Impact Report<br/>Files updated, Version changes,<br/>Modified principles, Cross-file impacts]
+
+    GenerateReport --> WriteFiles[Write constitution files<br/>to memory/constitution/]
+
+    WriteFiles --> OutputSummary[Output summary<br/>Files updated, Version rationale,<br/>Manual follow-ups, Commit message]
+
+    OutputSummary --> Done([Complete: Constitution updated<br/>Ready for specification work])
+
+    style Start fill:#e1f5ff
+    style Done fill:#d4edda
+    style ErrorValidation fill:#f8d7da
+    style ValidateContent fill:#fff3cd
+    style DetermineVersion fill:#fff3cd
+    style CheckFiles fill:#fff3cd
+          </pre>
         </div>
       </div>
 
