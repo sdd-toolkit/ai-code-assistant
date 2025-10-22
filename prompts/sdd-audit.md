@@ -20,8 +20,8 @@ The user **MUST** provide a feature name. This parameter is compulsory.
 
    - **If no feature name provided**: ERROR "Feature name is required. Usage: @sdd-audit <feature-name>"
    - **If feature name provided**: Continue with the specified feature
-   - Verify the feature exists in `.specify/specs/`
-   - If feature doesn't exist: ERROR "Feature '<feature-name>' not found in specs/. Available features: [list directory names from .specify/specs/]"
+   - Verify the feature exists in `specs/`
+   - If feature doesn't exist: ERROR "Feature '<feature-name>' not found in specs/. Available features: [list directory names from specs/]"
    - Set FEATURE_NAME to the provided feature name
    - Set FEATURE_DIR to `specs/<feature-name>/`
    - Run `.specify/scripts/{{SCRIPT_LANG}}/check-prerequisites{{SCRIPT_EXT}} <feature-name> --json --require-tasks` to validate and parse SPEC_FILE and AVAILABLE_DOCS. All paths must be absolute.

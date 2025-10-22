@@ -48,10 +48,10 @@ Detect drift between the current project state and the constitution, creating a 
    - (Principles with drift / Total principles) × 100
    - Include severity weighting for impact assessment
 
-7. Create `.specify/specs/CONSTITUTION_DRIFT.md` following the template format:
+7. Create `specs/CONSTITUTION_DRIFT.md` following the template format:
 
-   - **IMPORTANT**: If `.specify/specs/CONSTITUTION_DRIFT.md` already exists, overwrite it with the new drift report
-   - Use absolute path: `[repo-root]/.specify/specs/CONSTITUTION_DRIFT.md`
+   - **IMPORTANT**: If `specs/CONSTITUTION_DRIFT.md` already exists, overwrite it with the new drift report
+   - Use absolute path: `[repo-root]/specs/CONSTITUTION_DRIFT.md`
    - Header with drift detection date, constitution version, and drift score
    - Summary statistics section
    - One section per constitutional principle
@@ -71,5 +71,5 @@ Detect drift between the current project state and the constitution, creating a 
    - Compliant vs non-compliant principles
    - Next recommended actions
    - Suggested timeline for realignment
-   - Confirm file written to `.specify/specs/CONSTITUTION_DRIFT.md`
+   - Confirm file written to `specs/CONSTITUTION_DRIFT.md`
 ```

@@ -25,8 +25,8 @@ The user **MUST** provide a feature name. This parameter is compulsory.
 
    - **If no feature name provided**: ERROR "Feature name is required. Usage: @sdd-tasks <feature-name>"
    - **If feature name provided**: Continue with the specified feature
-   - Verify the feature exists in `.specify/specs/`
-   - If feature doesn't exist: ERROR "Feature '<feature-name>' not found in specs/. Available features: [list directory names from .specify/specs/]"
+   - Verify the feature exists in `specs/`
+   - If feature doesn't exist: ERROR "Feature '<feature-name>' not found in specs/. Available features: [list directory names from specs/]"
    - Set FEATURE_NAME to the provided feature name
 
 2. Run `.specify/scripts/{{SCRIPT_LANG}}/check-task-prerequisites{{SCRIPT_EXT}} <feature-name> --json` from repo root and parse FEATURE_DIR and AVAILABLE_DOCS list. All paths must be absolute.

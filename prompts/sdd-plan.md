@@ -25,8 +25,8 @@ The user **MUST** provide a feature name. This parameter is compulsory.
 
    - **If no feature name provided**: ERROR "Feature name is required. Usage: @sdd-plan <feature-name>"
    - **If feature name provided**: Continue with the specified feature
-   - Verify the feature exists in `.specify/specs/`
-   - If feature doesn't exist: ERROR "Feature '<feature-name>' not found in specs/. Available features: [list directory names from .specify/specs/]"
+   - Verify the feature exists in `specs/`
+   - If feature doesn't exist: ERROR "Feature '<feature-name>' not found in specs/. Available features: [list directory names from specs/]"
    - Set FEATURE_NAME to the provided feature name
 
 2. Run `.specify/scripts/{{SCRIPT_LANG}}/setup-plan{{SCRIPT_EXT}} <feature-name> --json` from the repo root and parse JSON for FEATURE_SPEC, IMPL_PLAN, SPECS_DIR, BRANCH. All future file paths must be absolute.
