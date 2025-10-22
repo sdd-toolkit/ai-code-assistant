@@ -21,13 +21,21 @@ The user **MUST** provide a feature name. This parameter is compulsory.
 
 ### Steps
 
-1. **Validate feature name parameter**:
+1. **Validate feature name parameter (Deterministic Algorithm)**:
 
-   - **If no feature name provided**: ERROR "Feature name is required. Usage: @sdd-implement <feature-name>"
-   - **If feature name provided**: Continue with the specified feature
-   - Verify the feature exists in `.specify/specs/`
-   - If feature doesn't exist: ERROR "Feature '<feature-name>' not found in specs/. Available features: [list directory names from .specify/specs/]"
-   - Set FEATURE_NAME to the provided feature name
+   **Step 1.1**: Check parameter existence
+
+   - IF no feature name provided → RETURN ERROR "Feature name is required. Usage: @sdd-implement <feature-name>"
+
+   **Step 1.2**: Validate feature directory
+
+   - IF `specs/<feature-name>` does not exist → RETURN ERROR "Feature '<feature-name>' not found in specs/. Available features: [list directory names from specs/]"
+   - IF `specs/<feature-name>` is not readable → RETURN ERROR "Cannot access feature directory: specs/<feature-name>"
+
+   **Step 1.3**: Set environment
+
+   - SET FEATURE_NAME = <feature-name>
+   - CONTINUE to step 2
 
 2. Run `.specify/scripts/{{SCRIPT_LANG}}/check-implementation-prerequisites{{SCRIPT_EXT}} <feature-name> --json` from repo root and parse FEATURE_DIR and AVAILABLE_DOCS list. All paths must be absolute.
 
@@ -42,15 +50,16 @@ The user **MUST** provide a feature name. This parameter is compulsory.
 
 4. **Load Constitutional Standards (Just-In-Time)**: Analyze the task being implemented and load only relevant sections:
 
-   **File Type Detection**:
+   **File Type Detection Priority (First Match Wins)**:
 
-   - If implementing **test files** (_.test._, _.spec._): Load `testing,branching`
-   - If implementing **service/business logic** (services/, handlers/): Load `core,architecture,observability,branching`
-   - If implementing **auth/security** (auth*, security*, validation\*): Load `core,security,branching`
-   - If implementing **database/models** (models/, entities/, repositories/): Load `core,architecture,branching`
-   - If implementing **API/routes** (routes/, controllers/, endpoints/): Load `core,architecture,security,branching`
-   - If implementing **config/deployment** (_.yml, _.yaml, Dockerfile): Load `operations,security,branching`
-   - If implementing **logging/monitoring** (logger*, monitor*, metrics\*): Load `observability,branching`
+   1. If implementing **test files** (`*.test.*`, `*.spec.*`): Load `testing,branching`
+   2. If implementing **auth/security** (`auth*`, `security*`, `validation*`): Load `core,security,branching`
+   3. If implementing **API/routes** (`routes/`, `controllers/`, `endpoints/`): Load `core,architecture,security,branching`
+   4. If implementing **service/business logic** (`services/`, `handlers/`): Load `core,architecture,observability,branching`
+   5. If implementing **database/models** (`models/`, `entities/`, `repositories/`): Load `core,architecture,branching`
+   6. If implementing **config/deployment** (`*.yml`, `*.yaml`, `Dockerfile`): Load `operations,security,branching`
+   7. If implementing **logging/monitoring** (`logger*`, `monitor*`, `metrics*`): Load `observability,branching`
+   8. **DEFAULT**: Load `core,branching`
 
    **Execution**:
 
@@ -73,6 +82,15 @@ The user **MUST** provide a feature name. This parameter is compulsory.
 
 6. Execute implementation following the task plan:
 
+   **Task Execution Decision Matrix**:
+
+   - IF (Task A [P] AND Task B [P] AND same_file(A,B)) → Execute A THEN B (sequential override)
+   - IF (Task A requires Task B AND Task B [P]) → Wait for B completion before A
+   - IF (Task fails AND has_dependents) → Halt phase, report blocking tasks
+   - IF (Parallel task fails) → Continue others, aggregate failures at phase end
+
+   **Execution Rules**:
+
    - **Phase-by-phase execution**: Complete each phase before moving to the next
    - **Respect dependencies**: Run sequential tasks in order, parallel tasks [P] can run together
    - **Follow TDD approach**: Execute test tasks before their corresponding implementation tasks
@@ -94,6 +112,16 @@ The user **MUST** provide a feature name. This parameter is compulsory.
    - **Polish and validation**: Unit tests, performance optimization, documentation
 
 8. Progress tracking and error handling:
+
+   **Task Update State Machine**:
+
+   1. EXECUTING → Mark task in progress
+   2. COMPLETED → Attempt file update (max 3 retries, 1s delay)
+   3. UPDATE_SUCCESS → Move to next task
+   4. UPDATE_FAILED → Log warning, add to completion_report_queue
+   5. PHASE_END → Batch update any failed updates from queue
+
+   **Error Handling Rules**:
 
    - Report progress after each completed task
    - **IMMEDIATELY after task completion**: Update tasks.md to mark task as [X]
