@@ -96,17 +96,25 @@ The user **MUST** provide a feature name. This parameter is compulsory.
 8. Progress tracking and error handling:
 
    - Report progress after each completed task
+   - **IMMEDIATELY after task completion**: Update tasks.md to mark task as [X]
+   - **Verify update**: Confirm the task file was successfully modified
+   - **Atomic updates**: Update one task at a time to avoid file corruption
    - Halt execution if any non-parallel task fails
    - For parallel tasks [P], continue with successful tasks, report failed ones
+   - **Task update failure handling**: If task marking fails, log warning but continue implementation
    - Provide clear error messages with context for debugging
    - Suggest next steps if implementation cannot proceed
    - **IMPORTANT** For completed tasks, make sure to mark the task off as [X] in the tasks file.
+   - **Backup mechanism**: If direct file update fails, provide explicit instruction to user about which tasks were completed
 
 9. Completion validation:
+   - **Final task audit**: Compare completed work against tasks.md to identify any unmarked completed tasks
+   - **Batch update missed tasks**: If any completed tasks aren't marked [X], update them all at once
    - Verify all required tasks are completed
    - Check that implemented features match the original specification
    - Validate that tests pass and coverage meets requirements
    - Confirm the implementation follows the technical plan
+   - **Generate completion report**: List all tasks with their final status (completed [X] vs pending [ ])
    - Report final status with summary of completed work
 
 Note: This command assumes a complete task breakdown exists in sdd-tasks.md. If tasks are incomplete or missing, suggest running the sdd-tasks prompt first to regenerate the task list.
