@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SDD Workflow Diagram Viewer</title>
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+      // Initialize Mermaid and expose it globally so non-module scripts can use it
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: "default",
+        flowchart: {
+          curve: "basis",
+          padding: 20,
+        },
+      });
+      // Expose to window for access in non-module scripts
+      window.mermaid = mermaid;
+    </script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      .header {
+        background: white;
+        border-radius: 16px;
+        padding: 30px;
+        margin-bottom: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      }
+
+      .header h1 {
+        color: #2d3748;
+        margin-bottom: 10px;
+        font-size: 2.5em;
+      }
+
+      .header p {
+        color: #718096;
+        font-size: 1.1em;
+      }
+
+      .nav-tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+      }
+
+      .nav-tab {
+        background: white;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 1em;
+        font-weight: 600;
+        color: #4a5568;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .nav-tab:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      .nav-tab.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+
+      .diagram-container {
+        background: white;
+        border-radius: 16px;
+        padding: 40px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        display: none;
+      }
+
+      .diagram-container.active {
+        display: block;
+      }
+
+      .diagram-title {
+        color: #2d3748;
+        font-size: 2em;
+        margin-bottom: 10px;
+        padding-bottom: 10px;
+        border-bottom: 3px solid #667eea;
+      }
+
+      .diagram-description {
+        color: #718096;
+        margin-bottom: 30px;
+        font-size: 1.1em;
+        line-height: 1.6;
+      }
+
+      .diagram-content {
+        overflow-x: auto;
+        padding: 20px 0;
+      }
+      /* Make rendered diagrams responsive */
+      .diagram-content svg {
+        max-width: 100%;
+        height: auto;
+      }
+
+      .mermaid {
+        display: flex;
+        justify-content: center;
+        min-height: 400px;
+      }
+
+      .legend {
+        background: #f7fafc;
+        border-radius: 10px;
+        padding: 20px;
+        margin-top: 30px;
+      }
+
+      .legend h3 {
+        color: #2d3748;
+        margin-bottom: 15px;
+        font-size: 1.3em;
+      }
+
+      .legend-items {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .legend-color {
+        width: 30px;
+        height: 30px;
+        border-radius: 6px;
+        border: 2px solid #cbd5e0;
+      }
+
+      .legend-color.start {
+        background: #e1f5ff;
+      }
+
+      .legend-color.success {
+        background: #d4edda;
+      }
+
+      .legend-color.error {
+        background: #f8d7da;
+      }
+
+      .legend-color.decision {
+        background: #fff3cd;
+      }
+
+      .legend-text {
+        color: #4a5568;
+        font-weight: 500;
+      }
+
+      .loading {
+        text-align: center;
+        padding: 60px;
+        color: #718096;
+        font-size: 1.2em;
+      }
+
+      @media (max-width: 768px) {
+        .header h1 {
+          font-size: 1.8em;
+        }
+
+        .nav-tab {
+          padding: 12px 20px;
+          font-size: 0.9em;
+        }
+
+        .diagram-container {
+          padding: 20px;
+        }
+
+        .legend-items {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .footer {
+        text-align: center;
+        color: white;
+        margin-top: 30px;
+        padding: 20px;
+        font-size: 0.9em;
+      }
+
+      .footer a {
+        color: white;
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🚀 SDD Workflow Diagram Viewer</h1>
+        <p>Interactive visualization of the Specification Driven Development workflow</p>
+      </div>
+
+      <div class="nav-tabs" role="tablist" aria-label="SDD workflow diagrams">
+        <button
+          id="tab-overview"
+          class="nav-tab active"
+          role="tab"
+          aria-selected="true"
+          aria-controls="diagram-overview"
+          data-target="diagram-overview"
+        >
+          📊 Overview
+        </button>
+        <button
+          id="tab-init"
+          class="nav-tab"
+          role="tab"
+          aria-selected="false"
+          aria-controls="diagram-init"
+          data-target="diagram-init"
+        >
+          🏗️ @sdd-init
+        </button>
+        <button
+          id="tab-specify"
+          class="nav-tab"
+          role="tab"
+          aria-selected="false"
+          aria-controls="diagram-specify"
+          data-target="diagram-specify"
+        >
+          📝 @sdd-specify
+        </button>
+        <button
+          id="tab-plan"
+          class="nav-tab"
+          role="tab"
+          aria-selected="false"
+          aria-controls="diagram-plan"
+          data-target="diagram-plan"
+        >
+          🎯 @sdd-plan
+        </button>
+        <button
+          id="tab-tasks"
+          class="nav-tab"
+          role="tab"
+          aria-selected="false"
+          aria-controls="diagram-tasks"
+          data-target="diagram-tasks"
+        >
+          📋 @sdd-tasks
+        </button>
+        <button
+          id="tab-implement"
+          class="nav-tab"
+          role="tab"
+          aria-selected="false"
+          aria-controls="diagram-implement"
+          data-target="diagram-implement"
+        >
+          ⚡ @sdd-implement
+        </button>
+        <button
+          id="tab-audit"
+          class="nav-tab"
+          role="tab"
+          aria-selected="false"
+          aria-controls="diagram-audit"
+          data-target="diagram-audit"
+        >
+          ✅ @sdd-audit
+        </button>
+        <button
+          id="tab-drift"
+          class="nav-tab"
+          role="tab"
+          aria-selected="false"
+          aria-controls="diagram-drift"
+          data-target="diagram-drift"
+        >
+          🔍 @sdd-drift
+        </button>
+      </div>
+
+      <!-- Overview Diagram -->
+      <div id="diagram-overview" class="diagram-container active" role="tabpanel" aria-labelledby="tab-overview">
+        <h2 class="diagram-title">Complete Workflow Overview</h2>
+        <p class="diagram-description">
+          End-to-end flow showing how all four main prompts work together to transform a feature description into a
+          working implementation.
+        </p>
+        <div class="diagram-content">
+          <pre class="mermaid">
+flowchart TD
+    subgraph specify["@sdd-specify - Create Specification"]
+        S1[User describes feature] --> S2[Load branching standards]
+        S2 --> S3{Validate branch name}
+        S3 -->|Invalid| S4[Error: Fix branch name]
+        S3 -->|Valid| S5[Create spec.md]
+        S5 --> S6[Create Git branch]
+    end
+
+    subgraph plan["@sdd-plan - Design Implementation"]
+        P1[Load spec.md] --> P2[Load constitution]
+        P2 --> P3[Phase 1: Research]
+        P3 --> P4{Gate check}
+        P4 -->|Pass| P5[Phase 2: Design Artifacts]
+        P5 --> P6{Gate check}
+        P6 -->|Pass| P7[Phase 3: Task Breakdown]
+        P7 --> P8[Generate plan.md]
+    end
+
+    subgraph tasks["@sdd-tasks - Generate Task List"]
+        T1[Load plan artifacts] --> T2[Detect task types]
+        T2 --> T3[Load relevant constitution]
+        T3 --> T4[Generate Setup phase]
+        T4 --> T5[Generate Tests phase]
+        T5 --> T6[Generate Core phase]
+        T6 --> T7[Generate Integration phase]
+        T7 --> T8[Generate Polish phase]
+        T8 --> T9[Create tasks.md]
+    end
+
+    subgraph implement["@sdd-implement - Execute Implementation"]
+        I1[Load tasks.md] --> I2{For each phase}
+        I2 --> I3{For each task}
+        I3 --> I4[Detect file type]
+        I4 --> I5[Load JIT constitution]
+        I5 --> I6{Parallel?}
+        I6 -->|Yes| I7[Execute parallel]
+        I6 -->|No| I8[Execute sequential]
+        I7 --> I9[Mark complete]
+        I8 --> I9
+        I9 --> I3
+        I3 --> I10[All done]
+    end
+
+    S6 --> P1
+    P8 --> T1
+    T9 --> I1
+
+    style specify fill:#e1f5ff
+    style plan fill:#fff3cd
+    style tasks fill:#d4edda
+    style implement fill:#fce4ec
+        </pre
+          >
+        </div>
+      </div>
+
+      <!-- @sdd-init Diagram -->
+      <div id="diagram-init" class="diagram-container" role="tabpanel" aria-labelledby="tab-init" hidden>
+        <h2 class="diagram-title">@sdd-init - Initialize/Update Constitution</h2>
+        <p class="diagram-description">
+          Create or update the project constitution with modular template/instance separation. Manages governance
+          standards for technology stack, architecture, testing, security, and observability.
+        </p>
+        <div class="diagram-content">
+          <pre class="mermaid">
+flowchart TD
+    Start([User runs @sdd-init or @sdd-init core]) --> CheckFiles{Constitution files<br/>exist in memory?}
+
+    CheckFiles -->|No files| InitializeAll[Initialize Constitution System<br/>Create memory/constitution/]
+    CheckFiles -->|Files exist| AskUser[Ask which files to update<br/>core, architecture, testing,<br/>security, observability, optional]
+
+    InitializeAll --> CopyTemplates[Copy templates to memory<br/>Remove template suffix<br/>Create constitution files]
+
+    CopyTemplates --> CheckGitWorkflow{Git workflow<br/>exists?}
+
+    CheckGitWorkflow -->|No| CopyGitWorkflow[Copy git-workflow-template.md<br/>to memory/git-workflow.yaml]
+    CheckGitWorkflow -->|Yes| InformUser
+
+    CopyGitWorkflow --> InformUser[Inform user<br/>Constitution initialized]
+
+    InformUser --> IdentifyPlaceholders
+
+    AskUser --> SelectFiles{User specifies<br/>files?}
+
+    SelectFiles -->|No specification| DefaultCore[Default to core.md]
+    SelectFiles -->|Specified| LoadTarget[Load target files]
+
+    DefaultCore --> CheckGitWorkflow2{Git workflow<br/>exists?}
+    LoadTarget --> CheckGitWorkflow2
+
+    CheckGitWorkflow2 -->|No| CopyGitWorkflow2[Copy git-workflow-template.md]
+    CheckGitWorkflow2 -->|Yes| IdentifyPlaceholders
+
+    CopyGitWorkflow2 --> IdentifyPlaceholders[Identify placeholders<br/>ALL_CAPS_IDENTIFIER patterns<br/>Respect user principle count]
+
+    IdentifyPlaceholders --> CollectValues[Collect placeholder values<br/>User input, Repo context,<br/>Prior versions, Governance dates]
+
+    CollectValues --> DetermineVersion[Determine version bump<br/>MAJOR, MINOR, or PATCH]
+
+    DetermineVersion --> DraftContent[Draft updated content<br/>Replace all placeholders<br/>Preserve heading hierarchy<br/>Ensure declarative principles]
+
+    DraftContent --> ValidateContent{Validation<br/>checks pass?}
+
+    ValidateContent -->|No| ErrorValidation[ERROR: Validation failed<br/>Fix placeholders, version,<br/>date format, vague language]
+
+    ValidateContent -->|Yes| CheckConsistency[Check consistency across<br/>plan-template, spec-template,<br/>tasks-template, commands]
+
+    CheckConsistency --> GenerateReport[Generate Sync Impact Report<br/>Files updated, Version changes,<br/>Modified principles, Cross-file impacts]
+
+    GenerateReport --> WriteFiles[Write constitution files<br/>to memory/constitution/]
+
+    WriteFiles --> OutputSummary[Output summary<br/>Files updated, Version rationale,<br/>Manual follow-ups, Commit message]
+
+    OutputSummary --> Done([Complete: Constitution updated<br/>Ready for specification work])
+
+    style Start fill:#e1f5ff
+    style Done fill:#d4edda
+    style ErrorValidation fill:#f8d7da
+    style ValidateContent fill:#fff3cd
+    style DetermineVersion fill:#fff3cd
+    style CheckFiles fill:#fff3cd
+          </pre>
+        </div>
+      </div>
+
+      <!-- @sdd-specify Diagram -->
+      <div id="diagram-specify" class="diagram-container" role="tabpanel" aria-labelledby="tab-specify" hidden>
+        <h2 class="diagram-title">@sdd-specify - Create Feature Specification</h2>
+        <p class="diagram-description">
+          Validates branching standards, creates a feature specification, and sets up the Git branch for development.
+          Optional reference context can be loaded for reuse.
+        </p>
+        <div class="diagram-content">
+          <pre class="mermaid">
+flowchart TD
+    Start([User: @sdd-specify feature-description]) --> CheckRef{-ref flag<br/>provided?}
+
+    CheckRef -->|No| LoadBranching[Load Branching Standards<br/>.specify/memory/git-workflow.yaml]
+    CheckRef -->|Yes| LoadRef[Load Reference Folder<br/>.specify/reference/folder-name/]
+
+    LoadRef --> LoadBranching
+
+    LoadBranching --> ValidateBranch{Validate against<br/>branching rules}
+
+    ValidateBranch -->|Invalid| ErrorBranch[ERROR: Branch name violates<br/>branching standards<br/>STOP]
+    ValidateBranch -->|Valid| CreateBranch[Create compliant branch name<br/>type/short-description]
+
+    CreateBranch --> RunScript[Run: create-new-feature.sh<br/>Parse JSON output]
+
+    RunScript --> PostValidate{Re-validate<br/>generated branch}
+
+    PostValidate -->|Invalid| ErrorBranch
+    PostValidate -->|Valid| CheckRefLoad{Reference<br/>folder loaded?}
+
+    CheckRefLoad -->|Yes| AddMetadata[Add reference metadata<br/>to spec.yaml]
+    CheckRefLoad -->|No| LoadTemplate[Load spec-template.md]
+
+    AddMetadata --> LoadTemplate
+
+    LoadTemplate --> PopulateSpec[Populate specification:<br/>- Feature Overview<br/>- User Stories<br/>- Acceptance Criteria<br/>- Technical Constraints]
+
+    PopulateSpec --> CheckRefContext{Reference<br/>context exists?}
+
+    CheckRefContext -->|Yes| AddRefSection[Add Reference Context section:<br/>- Architecture & Patterns<br/>- Code Examples<br/>- Configuration<br/>- Testing Approaches]
+    CheckRefContext -->|No| CreateSpec[Create spec.md in<br/>.specify/specs/feature-name/]
+
+    AddRefSection --> CreateSpec
+
+    CreateSpec --> CreateBranchGit[Create Git branch and switch]
+
+    CreateBranchGit --> Done([Complete: Spec created<br/>Ready for @sdd-plan])
+
+    style Start fill:#e1f5ff
+    style Done fill:#d4edda
+    style ErrorBranch fill:#f8d7da
+    style ValidateBranch fill:#fff3cd
+    style PostValidate fill:#fff3cd
+          </pre>
+        </div>
+      </div>
+
+      <!-- @sdd-plan Diagram -->
+      <div id="diagram-plan" class="diagram-container" role="tabpanel" aria-labelledby="tab-plan" hidden>
+        <h2 class="diagram-title">@sdd-plan - Design Implementation</h2>
+        <p class="diagram-description">
+          Three-phase execution with gate checks between phases. Generates comprehensive design artifacts including
+          research, data models, API contracts, and test scenarios.
+        </p>
+        <div class="diagram-content">
+          <pre class="mermaid">
+flowchart TD
+    Start([User: @sdd-plan feature-name]) --> CheckSpecs{Check .specify/specs/<br/>for features}
+
+    CheckSpecs -->|None found| ErrorNoSpec[ERROR: No specs found<br/>Run @sdd-specify first<br/>STOP]
+    CheckSpecs -->|Multiple found| PromptSelect[Show available features<br/>Prompt user to specify]
+    CheckSpecs -->|Single found| LoadSpec[Load spec.md]
+
+    PromptSelect --> UserSelect[User: @sdd-plan feature-name]
+    UserSelect --> LoadSpec
+
+    LoadSpec --> LoadConstitution[Load Constitution sections:<br/>core, architecture, testing, branching]
+
+    LoadConstitution --> CheckRef{Reference context<br/>in spec metadata?}
+
+    CheckRef -->|Yes| LoadRefContext[Load reference context<br/>from spec metadata]
+    CheckRef -->|No| Phase1
+
+    LoadRefContext --> Phase1[Phase 1: Research<br/>- Analyze requirements<br/>- Research technical decisions<br/>- Document trade-offs]
+
+    Phase1 --> Gate1{Gate Check:<br/>Research complete?}
+
+    Gate1 -->|No| Phase1
+    Gate1 -->|Yes| SaveResearch[Save research.md]
+
+    SaveResearch --> Phase2[Phase 2: Design Artifacts<br/>- Create data-model.md<br/>- Generate API contracts<br/>- Design test scenarios]
+
+    Phase2 --> Gate2{Gate Check:<br/>Artifacts complete?}
+
+    Gate2 -->|No| Phase2
+    Gate2 -->|Yes| SaveArtifacts[Save artifacts:<br/>- data-model.md<br/>- contracts/*.md<br/>- quickstart.md]
+
+    SaveArtifacts --> Phase3[Phase 3: Task Breakdown<br/>- Identify implementation tasks<br/>- Determine dependencies<br/>- Estimate complexity]
+
+    Phase3 --> Gate3{Gate Check:<br/>Tasks identified?}
+
+    Gate3 -->|No| Phase3
+    Gate3 -->|Yes| SavePlan[Save plan.md]
+
+    SavePlan --> Done([Complete: Design ready<br/>Run @sdd-tasks next])
+
+    style Start fill:#e1f5ff
+    style Done fill:#d4edda
+    style ErrorNoSpec fill:#f8d7da
+    style Gate1 fill:#fff3cd
+    style Gate2 fill:#fff3cd
+    style Gate3 fill:#fff3cd
+          </pre>
+        </div>
+      </div>
+
+      <!-- @sdd-tasks Diagram -->
+      <div id="diagram-tasks" class="diagram-container" role="tabpanel" aria-labelledby="tab-tasks" hidden>
+        <h2 class="diagram-title">@sdd-tasks - Generate Task List</h2>
+        <p class="diagram-description">
+          Creates dependency-ordered, executable task list with five phases. Uses TDD approach with tests before
+          implementation. Marks parallel-executable tasks with [P].
+        </p>
+        <div class="diagram-content">
+          <pre class="mermaid">
+flowchart TD
+  Start([User: @sdd-tasks feature-name]) --> CheckSpecs{Check for specs with plan.md}
+
+  CheckSpecs -->|None| ErrorNoSpec[ERROR: No specs found; Run @sdd-specify and @sdd-plan; STOP]
+  CheckSpecs -->|Multiple| PromptSelect[Show features with plans; Prompt user to specify]
+    CheckSpecs -->|Single| LoadArtifacts
+
+    PromptSelect --> UserSelect[User: @sdd-tasks feature-name]
+  UserSelect --> LoadArtifacts[Load plan artifacts: data-model.md, contracts files, research.md, quickstart.md]
+
+  LoadArtifacts --> DetectTypes[Detect task types needed: Testing?; API development?; Database work?; Infrastructure?]
+
+  DetectTypes --> LoadConstitution{Determine constitution sections to load}
+
+    LoadConstitution -->|Testing focus| LoadTesting[Load: testing, branching]
+  LoadConstitution -->|API focus| LoadAPI[Load: core, architecture, security, branching]
+  LoadConstitution -->|Infrastructure| LoadInfra[Load: core, operations, security, branching]
+  LoadConstitution -->|Mixed| LoadMixed[Load: core, testing, architecture, branching]
+
+    LoadTesting --> Phase1
+    LoadAPI --> Phase1
+    LoadInfra --> Phase1
+    LoadMixed --> Phase1
+
+  Phase1[Phase 1: Setup Tasks: Project initialization; Configuration setup; Environment setup]
+
+  Phase1 --> Phase2[Phase 2: Tests P: Contract tests for APIs; Integration test setup; Mark parallel with P]
+
+  Phase2 --> Phase3[Phase 3: Core Implementation: Data models; Services and business logic; API endpoints; Order by dependency]
+
+  Phase3 --> Phase4[Phase 4: Integration: Database integration; Middleware setup; Logging and observability; Error handling]
+
+  Phase4 --> Phase5[Phase 5: Polish P: Unit tests; Documentation; Performance optimization; Mark parallel with P]
+
+  Phase5 --> FormatTasks[Format as checkboxes: T001 Task description; T002 P Parallel task; Include dependencies]
+
+  FormatTasks --> SaveTasks[Save tasks.md in .specify/specs/feature-name/]
+
+  SaveTasks --> Done([Complete: Tasks ready; Run @sdd-implement next])
+
+    style Start fill:#e1f5ff
+    style Done fill:#d4edda
+    style ErrorNoSpec fill:#f8d7da
+    style LoadConstitution fill:#fff3cd
+          </pre>
+        </div>
+      </div>
+
+      <!-- @sdd-implement Diagram -->
+      <div id="diagram-implement" class="diagram-container" role="tabpanel" aria-labelledby="tab-implement" hidden>
+        <h2 class="diagram-title">@sdd-implement - Execute Implementation</h2>
+        <p class="diagram-description">
+          Phase-by-phase execution with just-in-time constitutional loading based on file type. Handles parallel
+          execution for independent tasks and sequential execution for dependencies.
+        </p>
+        <div class="diagram-content">
+          <pre class="mermaid">
+flowchart TD
+    Start([User: @sdd-implement feature-name]) --> CheckSpecs{Check for specs<br/>with tasks.md}
+
+    CheckSpecs -->|None| ErrorNoSpec[ERROR: No tasks found<br/>Run @sdd-specify, @sdd-plan, @sdd-tasks<br/>STOP]
+    CheckSpecs -->|Multiple| PromptSelect[Show features with tasks<br/>Prompt user to specify]
+    CheckSpecs -->|Single| LoadTasks
+
+    PromptSelect --> UserSelect[User: @sdd-implement feature-name]
+    UserSelect --> LoadTasks[Load tasks.md<br/>Parse task list]
+
+    LoadTasks --> PhaseLoop{For each phase:<br/>Setup, Tests, Core,<br/>Integration, Polish}
+
+    PhaseLoop --> TaskLoop{For each task<br/>in phase}
+
+  TaskLoop --> CheckComplete{Task already<br/>completed?}
+
+    CheckComplete -->|Yes| TaskLoop
+    CheckComplete -->|No| DetectFileType[Detect file type<br/>from task description]
+
+    DetectFileType --> LoadJIT{Load JIT constitution<br/>based on file type}
+
+    LoadJIT -->|Test file| LoadTest[Load: testing, branching]
+  LoadJIT -->|Service or Logic| LoadService[Load: core, architecture,<br/>observability, branching]
+  LoadJIT -->|Auth or Security| LoadSecurity[Load: core, security,<br/>branching]
+    LoadJIT -->|Database| LoadDB[Load: core, architecture,<br/>branching]
+  LoadJIT -->|API or Routes| LoadAPI[Load: core, architecture,<br/>security, branching]
+    LoadJIT -->|Config| LoadConfig[Load: operations,<br/>security, branching]
+    LoadJIT -->|Logging| LoadLogging[Load: observability,<br/>branching]
+
+    LoadTest --> CheckParallel
+    LoadService --> CheckParallel
+    LoadSecurity --> CheckParallel
+    LoadDB --> CheckParallel
+    LoadAPI --> CheckParallel
+    LoadConfig --> CheckParallel
+    LoadLogging --> CheckParallel
+
+  CheckParallel{Task marked P and other P tasks in same phase?}
+
+  CheckParallel -->|Yes| ExecuteParallel[Execute in parallel with other P tasks]
+    CheckParallel -->|No| ExecuteSequential[Execute sequentially<br/>Wait for dependencies]
+
+  ExecuteParallel --> Implement[Implement the task: Create/modify files; Follow constitution; Apply standards]
+    ExecuteSequential --> Implement
+
+    Implement --> Verify{Implementation<br/>successful?}
+
+    Verify -->|Error| HandleError[Log error<br/>Show to user]
+  Verify -->|Success| MarkComplete[Mark task complete: T001 Task description]
+
+    HandleError --> AskContinue{User wants to<br/>continue?}
+    AskContinue -->|No| Stop([Stopped by user])
+    AskContinue -->|Yes| TaskLoop
+
+    MarkComplete --> UpdateFile[Update tasks.md<br/>with completion]
+
+    UpdateFile --> TaskLoop
+
+    TaskLoop --> NextPhase{More tasks<br/>in phase?}
+    NextPhase -->|Yes| TaskLoop
+    NextPhase -->|No| PhaseLoop
+
+    PhaseLoop --> AllDone{All phases<br/>complete?}
+    AllDone -->|No| PhaseLoop
+    AllDone -->|Yes| Done([Complete: All tasks finished<br/>Feature implemented!])
+
+    style Start fill:#e1f5ff
+    style Done fill:#d4edda
+    style Stop fill:#f8d7da
+    style ErrorNoSpec fill:#f8d7da
+    style LoadJIT fill:#fff3cd
+    style CheckParallel fill:#fff3cd
+    style Verify fill:#fff3cd
+          </pre>
+        </div>
+      </div>
+
+      <!-- @sdd-audit Diagram -->
+      <div id="diagram-audit" class="diagram-container" role="tabpanel" aria-labelledby="tab-audit" hidden>
+        <h2 class="diagram-title">@sdd-audit - Validate Implementation Quality</h2>
+        <p class="diagram-description">
+          Progressive audit process that validates implementation against specification and constitutional standards.
+          Uses two-phase loading: critical compliance first, then additional sections only if issues detected.
+        </p>
+        <div class="diagram-content">
+          <pre class="mermaid">
+flowchart TD
+    Start([User: @sdd-audit feature-name]) --> CheckSpecs{Check for specs<br/>with required files}
+
+    CheckSpecs -->|None| ErrorNoSpec[ERROR: No specs found<br/>Run @sdd-specify first<br/>STOP]
+    CheckSpecs -->|Multiple| PromptSelect[Show available features<br/>Prompt user to specify]
+    CheckSpecs -->|Single| ValidateFiles
+
+    PromptSelect --> UserSelect[User: @sdd-audit feature-name]
+  UserSelect --> ValidateFiles[Verify required files exist: spec.md; plan.md; tasks.md]
+
+    ValidateFiles --> CheckMissing{All files<br/>present?}
+    CheckMissing -->|No| ErrorMissing[ERROR: Missing required files<br/>Cannot audit<br/>STOP]
+    CheckMissing -->|Yes| LoadTemplate[Load audit-template.md]
+
+  LoadTemplate --> LoadDocs[Load specification documents: spec.md - requirements; plan.md - architecture; tasks.md - expectations]
+
+    LoadDocs --> CheckRef{Reference context<br/>exists?}
+    CheckRef -->|Yes| LoadRefContext[Load reference context<br/>for patterns & standards]
+    CheckRef -->|No| Phase1Load
+
+    LoadRefContext --> Phase1Load[Phase 1: Load Critical Standards<br/>core, testing, security, branching]
+
+  Phase1Load --> AuditPhase1[Phase 1 Audit: Requirements coverage; Acceptance criteria; Task completion; Core code quality; Testing standards; Security compliance; Branching compliance]
+
+    AuditPhase1 --> CalcScore1[Calculate Phase 1<br/>Quality Score]
+
+    CalcScore1 --> DetectIssues{Issues detected<br/>in Phase 1?}
+
+    DetectIssues -->|No major issues| GenerateReport[Generate audit report]
+    DetectIssues -->|Architecture issues| LoadArch[Phase 2: Load architecture section]
+    DetectIssues -->|Observability issues| LoadObs[Phase 2: Load observability section]
+    DetectIssues -->|Operations issues| LoadOps[Phase 2: Load operations section]
+
+    LoadArch --> AuditPhase2[Phase 2 Audit:<br/>Deep dive into specific areas]
+    LoadObs --> AuditPhase2
+    LoadOps --> AuditPhase2
+
+    AuditPhase2 --> CalcScore2[Calculate Phase 2<br/>Quality Score]
+
+    CalcScore2 --> GenerateReport
+
+  GenerateReport --> CreateAuditReport[Create audit-report.md: Executive summary; Quality metrics; Compliance status; Issues by category; Recommendations; Action items]
+
+    CreateAuditReport --> SaveReport[Save to feature directory:<br/>.specify/specs/feature-name/<br/>audit-report.md]
+
+  SaveReport --> ShowSummary[Display summary: Overall score; Critical issues count; Recommendations; Next actions]
+
+    ShowSummary --> Done([Complete: Audit report created<br/>Review findings])
+
+    style Start fill:#e1f5ff
+    style Done fill:#d4edda
+    style ErrorNoSpec fill:#f8d7da
+    style ErrorMissing fill:#f8d7da
+    style CheckMissing fill:#fff3cd
+    style DetectIssues fill:#fff3cd
+    style CheckRef fill:#fff3cd
+          </pre>
+        </div>
+      </div>
+
+      <!-- @sdd-drift Diagram -->
+      <div id="diagram-drift" class="diagram-container" role="tabpanel" aria-labelledby="tab-drift" hidden>
+        <h2 class="diagram-title">@sdd-drift - Detect Constitutional Drift</h2>
+        <p class="diagram-description">
+          Scans the entire project to detect drift from constitutional standards. Creates prioritized TODO list with
+          critical security issues, compliance gaps, and quality improvements.
+        </p>
+        <div class="diagram-content">
+          <pre class="mermaid">
+flowchart TD
+    Start([User: @sdd-drift]) --> CheckConstitution{Constitution exists?<br/>.specify/memory/<br/>constitution.md}
+
+    CheckConstitution -->|No| ErrorNoConst[ERROR: Constitution not found<br/>Run @sdd-init first<br/>STOP]
+    CheckConstitution -->|Yes| LoadConstitution[Load constitution.md<br/>All principles & requirements]
+
+    LoadConstitution --> LoadTemplate[Load drift-template.md]
+
+    LoadTemplate --> ScanProject[Scan project structure:<br/>- README.md, package.json<br/>- Documentation<br/>- Code structure<br/>- Testing setup<br/>- CI/CD config<br/>- Dependencies]
+
+    ScanProject --> CheckSecurity[Check security drift:<br/>- Exposed secrets<br/>- Vulnerable dependencies<br/>- Insecure configurations<br/>- Missing auth/authz<br/>- Security logging]
+
+    CheckSecurity --> CheckStandards[Check coding standards:<br/>- Linting rules<br/>- Formatting consistency<br/>- Naming conventions<br/>- Code complexity<br/>- Documentation]
+
+    CheckStandards --> CheckArchitecture[Check architecture drift:<br/>- Design patterns<br/>- Module structure<br/>- Separation of concerns<br/>- API contracts<br/>- Error handling]
+
+    CheckArchitecture --> CheckTesting[Check testing drift:<br/>- Test coverage<br/>- Test organization<br/>- Integration tests<br/>- Contract tests<br/>- E2E tests]
+
+    CheckTesting --> CheckOps[Check operations drift:<br/>- CI/CD pipeline<br/>- Deployment practices<br/>- Monitoring setup<br/>- Logging standards<br/>- Configuration management]
+
+    CheckOps --> CompareAll[Compare each principle<br/>against project state]
+
+    CompareAll --> IdentifyGaps[Identify drift items:<br/>- Missing files<br/>- Configuration gaps<br/>- Practice violations<br/>- Quality issues]
+
+    IdentifyGaps --> PrioritizeItems{Prioritize by severity}
+
+    PrioritizeItems --> Critical[CRITICAL:<br/>Security vulnerabilities<br/>Exposed secrets<br/>Unsafe dependencies]
+    PrioritizeItems --> High[HIGH:<br/>Missing security controls<br/>Standard violations<br/>Broken builds]
+    PrioritizeItems --> Medium[MEDIUM:<br/>Documentation gaps<br/>Incomplete testing<br/>Quality issues]
+    PrioritizeItems --> Low[LOW:<br/>Style inconsistencies<br/>Optimization opportunities]
+
+    Critical --> CalcScore
+    High --> CalcScore
+    Medium --> CalcScore
+    Low --> CalcScore
+
+    CalcScore[Calculate drift score:<br/>drift % = violations / total<br/>Include severity weighting]
+
+    CalcScore --> CheckExisting{CONSTITUTION_DRIFT.md<br/>exists?}
+
+    CheckExisting -->|Yes| Overwrite[Overwrite existing file]
+    CheckExisting -->|No| CreateNew[Create new file]
+
+    Overwrite --> GenerateReport
+    CreateNew --> GenerateReport
+
+    GenerateReport[Generate drift report:<br/>- Header with date & score<br/>- Summary statistics<br/>- Section per principle<br/>- Detailed drift items<br/>- Action plan<br/>- Progress tracking]
+
+    GenerateReport --> SaveReport[Save to:<br/>.specify/specs/<br/>CONSTITUTION_DRIFT.md]
+
+    SaveReport --> ShowSummary[Display summary:<br/>- Total drift items by priority<br/>- Compliance percentage<br/>- Drift score<br/>- Next actions<br/>- Timeline suggestions]
+
+    ShowSummary --> Done([Complete: Drift report created<br/>Review and remediate])
+
+    style Start fill:#e1f5ff
+    style Done fill:#d4edda
+    style ErrorNoConst fill:#f8d7da
+    style CheckConstitution fill:#fff3cd
+    style PrioritizeItems fill:#fff3cd
+    style CheckExisting fill:#fff3cd
+    style Critical fill:#f8d7da
+    style High fill:#ffeaa7
+    style Medium fill:#fff3cd
+    style Low fill:#dfe6e9
+                </pre>
+        </div>
+      </div>
+
+      <!-- Legend -->
+      <div class="legend">
+        <h3>🎨 Diagram Legend</h3>
+        <div class="legend-items">
+          <div class="legend-item">
+            <div class="legend-color start"></div>
+            <span class="legend-text">Start/Entry Points</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color success"></div>
+            <span class="legend-text">Success/Completion</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color error"></div>
+            <span class="legend-text">Errors/Stop Points</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color decision"></div>
+            <span class="legend-text">Decision Points</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <p>
+          <strong>SDD LLM Toolkit</strong> • Version 0.2.0 •
+          <a href="https://github.com/sdd-toolkit/ai-code-assistant" target="_blank">GitHub Repository</a>
+        </p>
+        <p>Open this file directly in your browser - no server required!</p>
+      </div>
+    </div>
+
+    <script>
+      // --- Configurable debug logging ---
+      const DEBUG = false;
+      const log = (...args) => DEBUG && console.log(...args);
+
+      // Activate a given diagram panel by id
+      function showDiagram(diagramId) {
+        if (!diagramId) return;
+
+        const targetPanel = document.getElementById(diagramId);
+        if (!targetPanel) return;
+
+        // Deactivate all panels and tabs
+        document.querySelectorAll(".diagram-container").forEach((panel) => {
+          panel.classList.remove("active");
+          panel.setAttribute("hidden", "");
+        });
+        document.querySelectorAll(".nav-tab").forEach((tab) => {
+          tab.classList.remove("active");
+          tab.setAttribute("aria-selected", "false");
+        });
+
+        // Activate the requested panel
+        targetPanel.classList.add("active");
+        targetPanel.removeAttribute("hidden");
+
+        // Activate the matching tab
+        const activeTab = document.querySelector(`.nav-tab[data-target="${diagramId}"]`);
+        if (activeTab) {
+          activeTab.classList.add("active");
+          activeTab.setAttribute("aria-selected", "true");
+          activeTab.focus({ preventScroll: true });
+        }
+
+        // Update URL hash (without scrolling)
+        const hash = diagramId.replace("diagram-", "");
+        if (history.replaceState) {
+          history.replaceState(null, "", `#${hash}`);
+        } else {
+          location.hash = `#${hash}`;
+        }
+
+        // Initialize Mermaid for visible panel
+        initMermaidForPanel(targetPanel, diagramId);
+
+        // Scroll to top smoothly
+        window.requestAnimationFrame(() => {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+      }
+
+      function initMermaidForPanel(panel, diagramId) {
+        // Wait for layout to settle before initializing
+        window.requestAnimationFrame(() => {
+          setTimeout(() => {
+            try {
+              if (!window.mermaid) return;
+
+              const allNodes = panel.querySelectorAll("pre.mermaid");
+              const unprocessed = panel.querySelectorAll("pre.mermaid:not([data-processed])");
+              log(`Mermaid nodes in ${diagramId}: total=${allNodes.length}, unprocessed=${unprocessed.length}`);
+
+              // Only initialize nodes that haven't been processed yet.
+              // Previously processed panels remain rendered and don't need re-init.
+              if (unprocessed.length > 0) {
+                window.mermaid.init(undefined, unprocessed);
+              }
+            } catch (e) {
+              console.error(`Mermaid init error for ${diagramId}:`, e);
+            }
+          }, 100);
+        });
+      }
+
+      function wireTabs() {
+        const tabs = document.querySelectorAll('.nav-tab[role="tab"]');
+        tabs.forEach((tab, idx) => {
+          tab.addEventListener("click", (e) => {
+            e.preventDefault();
+            const target = tab.getAttribute("data-target");
+            showDiagram(target);
+          });
+
+          tab.addEventListener("keydown", (e) => {
+            if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+              e.preventDefault();
+              const dir = e.key === "ArrowRight" ? 1 : -1;
+              const all = Array.from(tabs);
+              const next = (idx + dir + all.length) % all.length;
+              all[next].focus();
+              const target = all[next].getAttribute("data-target");
+              showDiagram(target);
+            }
+          });
+        });
+      }
+
+      function initialRoute() {
+        // Determine initial panel from URL hash or default to overview
+        const hash = (location.hash || "#overview").replace("#", "");
+        const diagramId = `diagram-${hash}`;
+        const targetPanel = document.getElementById(diagramId);
+        if (targetPanel) {
+          showDiagram(diagramId);
+        } else {
+          showDiagram("diagram-overview");
+        }
+      }
+
+      window.addEventListener("DOMContentLoaded", () => {
+        wireTabs();
+        initialRoute();
+      });
+    </script>
+  </body>
+</html>
