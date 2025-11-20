@@ -1,0 +1,167 @@
+version: "1.0"
+name: "Git Workflow Standards"
+description: "Branch naming, commit messages, and lifecycle management for the specify prompt"
+
+branch_naming:
+  pattern: "type/short-description"
+  regex: "^(feat|fix|chore|refactor|test|docs|hotfix|maintenance)/[a-z0-9][a-z0-9-]*[a-z0-9]$"
+  length:
+    min: 10
+    max: 50
+  case: lowercase
+
+  rules:
+    must:
+      - "Follow pattern"
+      - "Valid type"
+      - "Only allowed characters (a-z, 0-9, -, /)"
+      - "Length between 10-50 characters"
+      - "Created from up-to-date develop (except hotfix/maintenance from main)"
+    must_not:
+      - "Start with numbers"
+      - "Use uppercase letters"
+      - "Use spaces"
+      - "Use special characters (_, @, #, $, %, ?, !)"
+      - "Use invalid types"
+    may:
+      - "Include numbers inside name when relevant (e.g., version/API)"
+
+  types:
+    - name: feat
+      description: "New feature"
+    - name: fix
+      description: "Bug fixes"
+    - name: chore
+      description: "Maintenance tasks"
+    - name: refactor
+      description: "Code refactoring"
+    - name: test
+      description: "Test additions or modifications"
+    - name: docs
+      description: "Documentation changes"
+    - name: hotfix
+      description: "Critical production fixes"
+    - name: maintenance
+      description: "Dependencies and operations updates"
+
+  examples:
+    valid:
+      - "feat/add-payment-endpoint"
+      - "fix/handle-auth-timeout"
+      - "docs/update-readme"
+      - "maintenance/update-dependencies"
+      - "feat/add-v2-endpoint"
+    invalid:
+      - value: "user-authentication-system"
+        reason: "Missing type prefix"
+      - value: "123-fix-bug"
+        reason: "Starts with number"
+      - value: "Fix_DB_Bug"
+        reason: "Contains uppercase and underscore"
+      - value: "feat/123-add-endpoint"
+        reason: "Number immediately after type"
+      - value: "new-feature"
+        reason: "Too short"
+
+branch_lifecycle:
+  branches:
+    - name: main
+      description: "Production-ready code only"
+      created_from: null
+      merge_to: []
+      requirements:
+        - "Protected branch"
+        - "Pull request only"
+      protected: true
+
+    - name: develop
+      description: "Integration branch"
+      created_from: null
+      merge_to:
+        - main
+      requirements:
+        - "Code audit passed"
+        - "All tests pass"
+        - "Code review approved"
+      protected: true
+
+    - name: "feature/*"
+      description: "New features"
+      created_from: develop
+      merge_to:
+        - develop
+      requirements:
+        - "All checks pass"
+        - "Pull request review"
+        - "No merge conflicts"
+      protected: false
+
+    - name: "hotfix/*"
+      description: "Critical production fixes"
+      created_from: main
+      merge_to:
+        - main
+        - develop
+      requirements:
+        - "Emergency procedure followed"
+      protected: false
+
+    - name: "maintenance/*"
+      description: "Updates and patches"
+      created_from:
+        - main
+        - develop
+      merge_to:
+        - main
+        - develop
+      requirements:
+        - "Code review approved"
+        - "All tests pass"
+        - "Security scan passed"
+      protected: false
+
+commit_message:
+  format: "[TYPE]: [BRIEF_DESCRIPTION]"
+  max_length: 72
+
+  rules:
+    must:
+      - "Follow format"
+      - "Use imperative mood (add/fix/update NOT added/fixed/updated)"
+      - "Be clear and descriptive"
+      - "Match branch type"
+      - "Use lowercase type"
+    must_not:
+      - "Exceed 72 characters"
+      - "Use past or continuous tense"
+      - "Contain sensitive information"
+      - "Be vague or unclear"
+
+  types:
+    - feat
+    - fix
+    - chore
+    - refactor
+    - test
+    - docs
+    - hotfix
+    - maintenance
+
+  examples:
+    valid:
+      - "feat: add user authentication endpoint"
+      - "fix: resolve timeout issue in payment processing"
+      - "docs: update API documentation for v2.1"
+      - "refactor: simplify error handling logic"
+      - "test: add unit tests for validation module"
+    invalid:
+      - value: "added new feature"
+        reason: "Past tense"
+      - value: "bug fix"
+        reason: "Missing format"
+      - value: "Updated the readme file with new instructions"
+        reason: "Too long and wrong tense"
+      - value: "fix stuff"
+        reason: "Not descriptive"
+      - value: "FEAT: Add Feature"
+        reason: "Uppercase type"
