@@ -1,15 +1,7 @@
 # Load Constitution Sections
-# Supports preset loading (backend, frontend, infra, core, testing) or explicit section lists
+# Automatically loads all constitution files from .specify/memory/constitution/ or .specify/templates/constitution/
 # Cross-platform compatible PowerShell script
 #Requires -Version 5.1
-
-param(
-    [Parameter(Position=0, Mandatory=$false)]
-    [string]$Input = "core",
-    
-    [Parameter(Mandatory=$false)]
-    [switch]$Help
-)
 
 $ErrorActionPreference = "Stop"
 
@@ -51,234 +43,88 @@ function Join-CrossPlatformPath {
     return $result
 }
 
-$constitutionDir = (Join-CrossPlatformPath @(".specify", "templates", "constitution"))
+$templateDir = (Join-CrossPlatformPath @(".specify", "templates", "constitution"))
 $memoryDir = (Join-CrossPlatformPath @(".specify", "memory"))
+$memoryConstitutionDir = (Join-CrossPlatformPath @($memoryDir, "constitution"))
 
-# Show help if requested
-if ($Help) {
-    Write-Host "=== Constitution Loader Help ===" -ForegroundColor Cyan
-    Write-Host ""
-    Write-Host "This script loads constitutional standards for software development." -ForegroundColor White
-    Write-Host ""
-    Write-Host "Usage:" -ForegroundColor Yellow
-    Write-Host "  pwsh .\load-constitution.ps1 [preset|sections] [-Help]" -ForegroundColor White
-    Write-Host ""
-    Write-Host "Presets:" -ForegroundColor Yellow
-    Write-Host "  • backend    - Core + Testing + Security + Observability + Architecture + Branching" -ForegroundColor White
-    Write-Host "  • frontend   - Core + Testing + Architecture + Optional + Branching" -ForegroundColor White
-    Write-Host "  • infra      - Core + Security + Observability + Branching" -ForegroundColor White
-    Write-Host "  • core       - Core + Branching (default)" -ForegroundColor White
-    Write-Host "  • testing    - Testing + Branching" -ForegroundColor White
-    Write-Host "  • full       - All available sections" -ForegroundColor White
-    Write-Host ""
-    Write-Host "Custom sections (comma-separated):" -ForegroundColor Yellow
-    Write-Host "  Available: core, testing, security, observability, architecture, optional, branching" -ForegroundColor White
-    Write-Host ""
-    Write-Host "Examples:" -ForegroundColor Yellow
-    Write-Host "  pwsh .\load-constitution.ps1" -ForegroundColor Green
-    Write-Host "  pwsh .\load-constitution.ps1 backend" -ForegroundColor Green
-    Write-Host "  pwsh .\load-constitution.ps1 `"core,testing,security`"" -ForegroundColor Green
-    Write-Host "  pwsh .\load-constitution.ps1 -Help" -ForegroundColor Green
-    exit 0
-}
+# Determine which constitution directory to use (memory first, then templates)
+$constitutionDir = ""
+$location = ""
 
-# Debug parameter input
-Write-Debug "Raw Input Parameter: '$Input'"
-Write-Debug "Input Length: $($Input.Length)"
-Write-Debug "Args count: $($args.Count)"
-if ($args.Count -gt 0) {
-    Write-Debug "First arg: '$($args[0])'"
-}
-
-# Fallback parameter handling for cross-platform compatibility
-if ([string]::IsNullOrWhiteSpace($Input) -and $args.Count -gt 0) {
-    Write-Debug "Using fallback parameter from args"
-    $Input = $args[0]
-}
-
-# Clean and validate input
-Write-Debug "Original Input before processing: '$Input'"
-Write-Debug "Input type: $($Input.GetType().FullName)"
-Write-Debug "Input length before trim: $($Input.Length)"
-
-# Clean the input more aggressively
-$Input = $Input.Trim()
-if ([string]::IsNullOrWhiteSpace($Input)) {
-    Write-Warning "Empty or whitespace-only input detected. Using default 'core'."
-    $Input = "core"
+if ((Test-Path $memoryConstitutionDir) -and ((Get-ChildItem -Path $memoryConstitutionDir -Filter "*.md" -File -ErrorAction SilentlyContinue).Count -gt 0)) {
+    $constitutionDir = $memoryConstitutionDir
+    $location = "memory (project-specific)"
 } else {
-    # Remove any line breaks, carriage returns, and normalize whitespace
-    $Input = $Input -replace "`r`n", "" -replace "`n", "" -replace "`r", ""
-    # Trim again after line break removal
-    $Input = $Input.Trim()
-    
-    Write-Debug "Cleaned Input: '$Input'"
-    Write-Debug "Cleaned Input Length: $($Input.Length)"
-    
-    # Final validation
-    if ([string]::IsNullOrWhiteSpace($Input)) {
-        Write-Warning "Input became empty after cleaning. Using default 'core'."
-        $Input = "core"
-    }
+    $constitutionDir = $templateDir
+    $location = "templates (default)"
 }
 
-# Function to validate section exists
-function Test-Section {
-    param([string]$Section)
-    
-    if ($Section -eq "branching") {
-        return Test-Path (Join-CrossPlatformPath @($memoryDir, "git-workflow.yaml"))
-    } else {
-        return Test-Path (Join-CrossPlatformPath @($constitutionDir, "$Section.md"))
-    }
-}
-
-# Function to load a section
+# Function to load a markdown section
 function Load-Section {
-    param([string]$Section)
+    param(
+        [string]$Section,
+        [string]$FileName
+    )
     
-    $file = ""
-    
-    if ($Section -eq "branching") {
-        $file = (Join-CrossPlatformPath @($memoryDir, "git-workflow.yaml"))
-    } else {
-        $file = (Join-CrossPlatformPath @($constitutionDir, "$Section.md"))
-    }
-    
-    if (Test-Path $file) {
+    if (Test-Path $FileName) {
         Write-Output ""
         Write-Output "<!-- Constitution Section: $Section -->"
         Write-Output ""
-        Get-Content $file -Encoding UTF8 | Write-Output
+        Get-Content $FileName -Encoding UTF8 | Write-Output
         Write-Output ""
         Write-Output "---"
         Write-Output ""
     } else {
-        Write-Warning "Warning: Missing section '$Section' (expected at $file)"
-        Write-Host "Available constitution files:" -ForegroundColor Yellow
-        if (Test-Path $constitutionDir) {
-            Get-ChildItem (Join-CrossPlatformPath @($constitutionDir, "*.md")) | ForEach-Object { 
-                Write-Host "  • $($_.BaseName)" -ForegroundColor Gray
-            }
-        }
-        if (Test-Path (Join-CrossPlatformPath @($memoryDir, "git-workflow.yaml"))) {
-            Write-Host "  • branching (from git-workflow.yaml)" -ForegroundColor Gray
-        }
+        Write-Warning "Warning: Missing section '$Section' (expected at $FileName)"
     }
 }
 
-# Determine which sections to load
+# Discover all constitution markdown files
 $sections = @()
-
-if ($Input -match ',') {
-    # Explicit section list (comma-separated)
-    $sections = ($Input -split ',') | ForEach-Object { 
-        $section = $_.Trim()
-        if (![string]::IsNullOrWhiteSpace($section)) {
-            $section
-        }
-    }
-    
-    # Filter out empty sections and validate
-    $sections = $sections | Where-Object { ![string]::IsNullOrWhiteSpace($_) }
-    
-    if ($sections.Count -eq 0) {
-        Write-Warning "No valid sections found after parsing comma-separated input. Using default 'core'."
-        $Input = "core"
-    } else {
-        # Validate each section exists
-        $validSections = @()
-        $invalidSections = @()
-        
-        foreach ($section in $sections) {
-            if (Test-Section -Section $section) {
-                $validSections += $section
-            } else {
-                $invalidSections += $section
-            }
-        }
-        
-        if ($invalidSections.Count -gt 0) {
-            Write-Warning "Invalid sections detected: $($invalidSections -join ', ')"
-            Write-Host "Valid sections are: core, testing, security, observability, architecture, optional, branching" -ForegroundColor Yellow
-        }
-        
-        if ($validSections.Count -gt 0) {
-            $sections = $validSections
-        } else {
-            Write-Warning "No valid sections found. Using default 'core'."
-            $Input = "core"
-            $sections = @()
-        }
-    }
-}
-
-if ($sections.Count -eq 0) {
-    # Project type preset
-    switch ($Input) {
-        "backend" {
-            $sections = @("core", "testing", "security", "observability", "architecture", "branching")
-        }
-        "frontend" {
-            $sections = @("core", "testing", "architecture", "optional", "branching")
-        }
-        "infra" {
-            $sections = @("core", "security", "observability", "branching")
-        }
-        "core" {
-            $sections = @("core", "branching")
-        }
-        "testing" {
-            $sections = @("testing", "branching")
-        }
-        "full" {
-            $sections = @("core", "testing", "security", "observability", "architecture", "optional", "branching")
-        }
-        default {
-            Write-Host "=== Constitution Loader Error ===" -ForegroundColor Red
-            Write-Host ""
-            Write-Host "Unknown preset: '$Input' (length: $($Input.Length))" -ForegroundColor Yellow
-            Write-Host ""
-            Write-Host "Available presets:" -ForegroundColor Cyan
-            Write-Host "  • backend    - Core + Testing + Security + Observability + Architecture + Branching" -ForegroundColor White
-            Write-Host "  • frontend   - Core + Testing + Architecture + Optional + Branching" -ForegroundColor White
-            Write-Host "  • infra      - Core + Security + Observability + Branching" -ForegroundColor White
-            Write-Host "  • core       - Core + Branching (default)" -ForegroundColor White
-            Write-Host "  • testing    - Testing + Branching" -ForegroundColor White
-            Write-Host "  • full       - All available sections" -ForegroundColor White
-            Write-Host ""
-            Write-Host "Or use comma-separated section list:" -ForegroundColor Cyan
-            Write-Host "  Available sections: core, testing, security, observability, architecture, optional, branching" -ForegroundColor White
-            Write-Host ""
-            Write-Host "Example usage:" -ForegroundColor Cyan
-            Write-Host "  pwsh .\load-constitution.ps1 `"core`"" -ForegroundColor Green
-            Write-Host "  pwsh .\load-constitution.ps1 `"backend`"" -ForegroundColor Green
-            Write-Host "  pwsh .\load-constitution.ps1 `"core,architecture,testing,branching`"" -ForegroundColor Green
-            Write-Host ""
-            Write-Host "Debug info:" -ForegroundColor Magenta
-            Write-Host "  Raw input: '$($args[0])'" -ForegroundColor Gray
-            Write-Host "  Processed input: '$Input'" -ForegroundColor Gray
-            Write-Host "  Input type: $($Input.GetType().Name)" -ForegroundColor Gray
-            exit 1
-        }
+$filenames = @()
+if (Test-Path $constitutionDir) {
+    $files = Get-ChildItem -Path $constitutionDir -Filter "*.md" -File | Sort-Object Name
+    foreach ($file in $files) {
+        $section = $file.BaseName
+        # Skip template suffix if present
+        $section = $section -replace '-template$', ''
+        $sections += $section
+        $filenames += $file.FullName
     }
 }
 
 # Print header
 Write-Output "# Constitutional Standards"
 Write-Output ""
-Write-Output "**Loading Type**: $Input"
-Write-Output "**Sections**: $($sections -join ', ')"
+Write-Output "**Loading Mode**: Auto-discovery"
+Write-Output "**Location**: $location"
+Write-Output "**Sections Found**: $($sections.Count)"
 Write-Output ""
 Write-Output "---"
 Write-Output ""
 
-# Load each section
-foreach ($section in $sections) {
-    Load-Section -Section $section
+# Load each discovered section
+for ($i = 0; $i -lt $sections.Count; $i++) {
+    Load-Section -Section $sections[$i] -FileName $filenames[$i]
+}
+
+# Always load branching from git-workflow.yaml with YAML code fencing
+$gitWorkflowFile = (Join-CrossPlatformPath @($memoryDir, "git-workflow.yaml"))
+if (Test-Path $gitWorkflowFile) {
+    Write-Output ""
+    Write-Output "<!-- Constitution Section: branching -->"
+    Write-Output ""
+    Write-Output '```yaml'
+    Get-Content $gitWorkflowFile -Encoding UTF8 | Write-Output
+    Write-Output '```'
+    Write-Output ""
+    Write-Output "---"
+    Write-Output ""
+} else {
+    Write-Warning "Warning: Missing git-workflow.yaml (expected at $gitWorkflowFile)"
 }
 
 # Print footer with metadata
 Write-Output ""
 Write-Output "<!-- End of Constitution Loading -->"
-Write-Output "<!-- Loaded $($sections.Count) sections: $($sections -join ', ') -->"
+Write-Output "<!-- Loaded $($sections.Count) constitution sections + branching (git-workflow.yaml) -->"
