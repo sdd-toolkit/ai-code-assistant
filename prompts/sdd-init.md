@@ -27,12 +27,10 @@ Each template file contains placeholder tokens in square brackets (e.g. `[PROJEC
 Follow this execution flow:
 
 1. **Initialize constitution working copies if needed**:
-
    - Check if `.specify/memory/constitution/` directory exists
    - Check if `.specify/memory/constitution/core.md` exists
 
    - If **core.md does NOT exist in memory/constitution/**:
-
      - Inform the user: "Initializing modular constitution from templates..."
      - Create `.specify/memory/constitution/` directory
      - Copy template files to memory/constitution/, removing `-template` suffix:
@@ -43,22 +41,20 @@ Follow this execution flow:
        - `templates/constitution/observability-template.md` → `memory/constitution/observability.md`
        - `templates/constitution/user-interface-template.md` → `memory/constitution/user-interface.md` (if template exists)
      - Check if `.specify/memory/git-workflow.yaml` exists
-       - If it **does NOT exist**: Copy `.specify/templates/git-workflow-template.md` to `.specify/memory/git-workflow.yaml`
+       - If it **does NOT exist**: Copy `.specify/templates/git-workflow-template.yaml` to `.specify/memory/git-workflow.yaml`
      - Inform the user which modular constitution files were initialized in `.specify/memory/constitution/`
      - Proceed to next step
 
    - If **files exist in memory/constitution/**:
-
      - Load the existing constitution files from `.specify/memory/constitution/` that the user wants to update
      - Check if `.specify/memory/git-workflow.yaml` exists
-       - If it **does NOT exist**: Copy `.specify/templates/git-workflow-template.md` to `.specify/memory/git-workflow.yaml`
+       - If it **does NOT exist**: Copy `.specify/templates/git-workflow-template.yaml` to `.specify/memory/git-workflow.yaml`
      - Proceed to next step
 
    - Identify every placeholder token of the form `[ALL_CAPS_IDENTIFIER]` in the relevant constitution file(s).
      **IMPORTANT**: The user might require less or more principles than the ones used in the template. If a number is specified, respect that - follow the general template. You will update the doc accordingly.
 
 2. Collect/derive values for placeholders:
-
    - Ask the user which constitution file(s) they want to update: core, architecture, testing, security, observability, or user-interface
    - If user doesn't specify, default to updating `core.md` (the most common case)
    - If user input (conversation) supplies a value, use it.
@@ -71,7 +67,6 @@ Follow this execution flow:
    - If version bump type ambiguous, propose reasoning before finalizing.
 
 3. Draft the updated constitution content for the target file(s):
-
    - Replace every placeholder with concrete text (no bracketed tokens left except intentionally retained template slots that the project has chosen not to define yet—explicitly justify any left).
    - Preserve heading hierarchy and comments can be removed once replaced unless they still add clarifying guidance.
    - For **core.md**: Technology stack, coding standards, versioning policies
@@ -84,7 +79,6 @@ Follow this execution flow:
    - Ensure metadata header includes section name, token count estimate, priority, and version.
 
 4. Consistency propagation checklist (convert prior checklist into active validations):
-
    - Read `.specify/templates/plan-template.md` and ensure any "Constitution Check" or rules align with updated principles.
    - Read `.specify/templates/spec-template.md` for scope/requirements alignment—update if constitution adds/removes mandatory sections or constraints.
    - Read `.specify/templates/tasks-template.md` and ensure task categorization reflects new or removed principle-driven task types (e.g., observability, versioning, testing discipline).
@@ -93,7 +87,6 @@ Follow this execution flow:
    - **Important**: The modular constitution approach means other prompts load only the sections they need (e.g., `@sdd-implement` loads `testing,branching` for test files, `core,architecture,security,branching` for API files). Ensure your changes maintain this modularity.
 
 5. Produce a Sync Impact Report (prepend as an HTML comment at top of the updated constitution file(s)):
-
    - File updated: which constitution file(s) were modified
    - Version change: old → new (per file)
    - List of modified principles (old title → new title if renamed)
@@ -104,7 +97,6 @@ Follow this execution flow:
    - Impact on other constitution files (e.g., if core.md changes affect architecture.md)
 
 6. Validation before final output:
-
    - No remaining unexplained bracket tokens.
    - Version line matches report.
    - Dates ISO format YYYY-MM-DD.

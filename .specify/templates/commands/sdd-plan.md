@@ -8,7 +8,6 @@ Execute the implementation planning workflow using the plan template to generate
 1. Run `.specify/scripts/bash/setup-plan.sh --json` from the repo root and parse JSON for FEATURE_SPEC, IMPL_PLAN, SPECS_DIR, BRANCH. All future file paths must be absolute.
 
 2. Read and analyze the feature specification to understand:
-
    - The feature requirements and user stories
    - Functional and non-functional requirements
    - Success criteria and acceptance criteria
@@ -18,25 +17,24 @@ Execute the implementation planning workflow using the plan template to generate
      - This provides pre-analyzed context without re-loading files
      - Reference the "Key Insights" and "Referenced Files" for design decisions and consistency
 
-3. **Load Constitutional Standards**: Execute `.specify/scripts/bash/load-constitution.sh` with targeted sections for planning:
-
-   **Planning-Specific Sections**:
+3. **Load Constitutional Standards**: Execute `.specify/scripts/bash/load-constitution.sh` to auto-load all constitution sections:
 
    ```bash
-   .specify/scripts/bash/load-constitution.sh "core,architecture,testing,branching"
+   .specify/scripts/bash/load-constitution.sh
    ```
 
-   **Purpose**: Load only the modular constitution sections needed for technical planning from `.specify/memory/constitution/`:
-
+   **Purpose**: Automatically loads all modular constitution sections from `.specify/memory/constitution/` (or templates if not initialized):
    - **core**: Technology stack, coding standards, linting requirements
    - **architecture**: Architectural principles, design patterns, API design
    - **testing**: Testing strategies, coverage requirements, test organization
-   - **branching**: Git workflow and commit standards
+   - **security**: Security standards and best practices
+   - **observability**: Logging, monitoring, and debugging standards
+   - **user-interface**: UI/UX standards (if applicable)
+   - **branching**: Git workflow and commit standards (from git-workflow.yaml)
 
-   **Note**: This is more efficient than loading the full constitution while retaining all planning-relevant standards.
+   **Note**: All sections are loaded automatically - no need to specify which ones.
 
 4. Execute the implementation plan template:
-
    - Load `.specify/templates/plan-template.md` (already copied to IMPL_PLAN path)
    - Set Input path to FEATURE_SPEC
    - Run the Execution Flow (main) function steps 1-9
@@ -50,7 +48,6 @@ Execute the implementation planning workflow using the plan template to generate
    - Update Progress Tracking as you complete each phase
 
 5. Verify execution completed:
-
    - Check Progress Tracking shows all phases complete
    - Ensure all required artifacts were generated
    - Confirm no ERROR states in execution

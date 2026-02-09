@@ -11,7 +11,7 @@ flowchart TD
 
     CopyTemplates --> CheckGitWorkflow{Git workflow<br/>exists?}
 
-    CheckGitWorkflow -->|No| CopyGitWorkflow[Copy git-workflow-template.md<br/>to memory/git-workflow.yaml]
+    CheckGitWorkflow -->|No| CopyGitWorkflow[Copy git-workflow-template.yaml<br/>to memory/git-workflow.yaml]
     CheckGitWorkflow -->|Yes| InformUser
 
     CopyGitWorkflow --> InformUser[Inform user:<br/>Constitution initialized]
@@ -26,7 +26,7 @@ flowchart TD
     DefaultCore --> CheckGitWorkflow2{Git workflow<br/>exists?}
     LoadTarget --> CheckGitWorkflow2
 
-    CheckGitWorkflow2 -->|No| CopyGitWorkflow2[Copy git-workflow-template.md]
+    CheckGitWorkflow2 -->|No| CopyGitWorkflow2[Copy git-workflow-template.yaml]
     CheckGitWorkflow2 -->|Yes| IdentifyPlaceholders
 
     CopyGitWorkflow2 --> IdentifyPlaceholders[Identify placeholders:<br/>ALL_CAPS_IDENTIFIER patterns<br/>Respect user's principle count]

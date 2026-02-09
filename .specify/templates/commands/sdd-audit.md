@@ -1,17 +1,15 @@
 ```markdown
 Audit the implementation against the specification to validate quality and alignment.
 
-1. Run `.specify/scripts/bash/check-prerequisites.sh --json --require-tasks` from repo root and parse FEATURE_DIR, SPEC_FILE, and AVAILABLE_DOCS. All paths must be absolute.
+1. Run `.specify/scripts/bash/check-implementation-prerequisites.sh --json --require-tasks` from repo root and parse FEATURE_DIR, SPEC_FILE, and AVAILABLE_DOCS. All paths must be absolute.
 
 2. Verify required files exist:
-
    - spec.md (required)
    - plan.md (required)
    - tasks.md (required)
    - If any missing: ERROR "Cannot audit without complete specification, plan, and tasks"
 
 3. Load the audit template:
-
    - Use `.specify/templates/audit-template.md` as the structure
    - Set Input to feature directory path
    - Run the Execution Flow (main) function steps 1-9
@@ -19,7 +17,6 @@ Audit the implementation against the specification to validate quality and align
    - Follow error handling and gate checks as specified
 
 4. Load and analyze specification documents:
-
    - Read spec.md for requirements and acceptance criteria
    - Read plan.md for technical design and architecture
    - Read tasks.md for implementation expectations
@@ -27,7 +24,6 @@ Audit the implementation against the specification to validate quality and align
    - Note all functional and non-functional requirements
 
 5. Audit the implementation:
-
    - **Requirements Coverage**: Verify all functional requirements (FR-XXX) are implemented
    - **Acceptance Criteria**: Test against each acceptance scenario from spec.md
    - **Technical Alignment**: Compare implementation against plan.md architecture
@@ -39,7 +35,6 @@ Audit the implementation against the specification to validate quality and align
    - **Security**: Check for security issues, exposed secrets, vulnerabilities
 
 6. Compare against specification expectations:
-
    - Identify missing functionality
    - Note incomplete tasks
    - Flag deviations from technical plan
@@ -52,14 +47,12 @@ Audit the implementation against the specification to validate quality and align
      - **Low**: Style inconsistencies, optimization opportunities
 
 7. Calculate compliance metrics:
-
    - Requirements coverage: (Implemented FRs / Total FRs) × 100
    - Task completion: (Completed tasks / Total tasks) × 100
    - Test coverage: (Tested scenarios / Total scenarios) × 100
    - Overall quality score: Weighted average of all metrics
 
 8. Create `FEATURE_DIR/AUDIT.md` following the template format:
-
    - **IMPORTANT**: If `AUDIT.md` already exists in feature directory, overwrite it
    - Use absolute path: `[repo-root]/.specify/specs/[feature-name]/AUDIT.md`
    - Header with audit date, feature name, and quality scores
