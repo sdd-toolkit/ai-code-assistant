@@ -115,7 +115,6 @@ ios/ or android/
 ## Phase 0: Outline & Research
 
 1. **Extract unknowns from Technical Context** above:
-
    - For each NEEDS CLARIFICATION → research task
    - For each dependency → best practices task
    - For each integration → patterns task
@@ -141,25 +140,21 @@ ios/ or android/
 _Prerequisites: research.md complete_
 
 1. **Extract entities from feature spec** → `data-model.md`:
-
    - Entity name, fields, relationships
    - Validation rules from requirements
    - State transitions if applicable
 
 2. **Generate API contracts** from functional requirements:
-
    - For each user action → endpoint
    - Use standard REST/GraphQL patterns
    - Output OpenAPI/GraphQL schema to `/contracts/`
 
 3. **Generate contract tests** from contracts:
-
    - One test file per endpoint
    - Assert request/response schemas
    - Tests must fail (no implementation yet)
 
 4. **Extract test scenarios** from user stories:
-
    - Each story → integration test scenario
    - Quickstart test = story validation steps
 
@@ -235,4 +230,4 @@ _This checklist is updated during execution flow_
 
 ---
 
-_Based on Constitution v2.1.1 - See `/memory/constitution.md`_
+_Based on Constitution - See `.specify/memory/constitution/`_

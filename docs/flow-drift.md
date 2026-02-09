@@ -2,10 +2,10 @@
 
 ```mermaid
 flowchart TD
-    Start([User: @sdd-drift]) --> CheckConstitution{Constitution exists?<br/>.specify/memory/<br/>constitution.md}
+    Start([User: @sdd-drift]) --> CheckConstitution{Constitution exists?<br/>.specify/memory/<br/>constitution/}
 
     CheckConstitution -->|No| ErrorNoConst[ERROR: Constitution not found<br/>Run @sdd-init first<br/>STOP]
-    CheckConstitution -->|Yes| LoadConstitution[Load constitution.md<br/>All principles & requirements]
+    CheckConstitution -->|Yes| LoadConstitution[Load constitution/<br/>All principles & requirements]
 
     LoadConstitution --> LoadTemplate[Load drift-template.md]
 
