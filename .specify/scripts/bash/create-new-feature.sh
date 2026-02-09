@@ -3,7 +3,7 @@
 # Modified by Trentin Barnard, 2025
 # MIT License
 
-# (Moved to scripts/bash/) Create a new feature with branch, directory structure, and template
+# (Moved to scripts/bash/) Create a new feature directory structure and template
 set -e
 
 JSON_MODE=false
@@ -27,8 +27,6 @@ SPECS_DIR="$REPO_ROOT/specs"
 mkdir -p "$SPECS_DIR"
 
 BRANCH_NAME=$(echo "$FEATURE_DESCRIPTION" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/-\+/-/g' | sed 's/^-//' | sed 's/-$//')
-
-git checkout -b "$BRANCH_NAME"
 
 FEATURE_DIR="$SPECS_DIR/$BRANCH_NAME"
 mkdir -p "$FEATURE_DIR"

@@ -10,14 +10,14 @@ Create or update the feature specification from a natural language feature descr
 ## Usage
 
 - `@sdd-specify <feature_description>` - Create a new feature specification (defaults to `feat` type)
-- `@sdd-specify <feature_description> -type <branch_type>` - Create specification with specific branch type
+- `@sdd-specify <feature_description> -type <branch_type>` - Create specification with specific type prefix
 - `@sdd-specify <feature_description> -ref <reference_folder>` - Create specification with reference context
 - `@sdd-specify <feature_description> -type <branch_type> -ref <reference_folder>` - Create specification with both type and reference
 
 ### Arguments
 
 - **`<feature_description>`** (REQUIRED): Natural language description of the feature without type prefix (first text after `@sdd-specify`)
-- **`-type <branch_type>`** (OPTIONAL): Git branch type - must be one of: `feat`, `fix`, `chore`, `refactor`, `test`, `docs`, `hotfix`, `maintenance` (defaults to `feat`)
+- **`-type <branch_type>`** (OPTIONAL): Feature type prefix - must be one of: `feat`, `fix`, `chore`, `refactor`, `test`, `docs`, `hotfix`, `maintenance` (defaults to `feat`)
 - **`-ref <reference_folder>`** (OPTIONAL): Name of the reference folder in `.specify/reference/` to use for context
 
 ### Examples
@@ -55,13 +55,11 @@ The user will provide a feature description (first text after the command), opti
 0. **Parse and Validate Arguments**: Before proceeding, parse the user input and validate:
 
    **Feature Description Extraction**:
-
    - **REQUIRED**: Extract the feature description from the first text after `@sdd-specify` (before any flags)
    - All text before the first `-` flag (if any) is the feature description
    - **STOP AND ERROR**: If no feature description is provided, immediately stop processing and return an error message
 
    **Branch Type Validation**:
-
    - **Default**: If `-type` is not provided, default to `feat`
    - **REQUIRED**: If `-type` is provided, it MUST be one of: `feat`, `fix`, `chore`, `refactor`, `test`, `docs`, `hotfix`, `maintenance`
    - **STOP AND ERROR**: If an invalid type is provided, immediately stop processing and inform the user of valid types
@@ -104,26 +102,39 @@ The user will provide a feature description (first text after the command), opti
 
    Do not proceed with any further steps if validation fails.
 
-0.1. **Construct Full Feature Description**: Combine the branch type with the feature description to create the full branch-ready description:
+0.1. **Construct Full Feature Description**: Combine the type prefix with the feature description to create the full description:
 
 - Format: `<type>/<feature_description>`
 - Example: If `-type fix` and feature description is "payment timeout issue", construct `fix/payment timeout issue`
 - If `-type` was not provided, use `feat/<feature_description>`
 
-  0.2. **Summarize the feature description**: Create a concise summary of the full feature description (including type prefix) that is 80 characters or less. This summary should capture the essential meaning while preserving the required type prefix and being suitable for use as a git branch name. Preserve key technical terms and maintain clarity.
+  0.2. **Summarize the feature description**: Create a concise summary of the full feature description (including type prefix) that is 80 characters or less. This summary should capture the essential meaning while preserving the required type prefix and being suitable for use as a directory name. Preserve key technical terms and maintain clarity.
 
 1. Run the script `.specify/scripts/{{SCRIPT_LANG}}/create-new-feature{{SCRIPT_EXT}} --json "<summarized_description_with_prefix>"` from repo root and parse its JSON output for BRANCH_NAME and SPEC_FILE. All file paths must be absolute.
    **IMPORTANT** You must only ever run this script once. The JSON is provided in the terminal as output - always refer to it to get the actual content you're looking for.
    **NOTE** Branch names are automatically generated from the summarized description (max 65 chars after transformation).
 
-   **Branch Name Generation**: The script automatically generates a git branch name from the summarized feature description by:
-
+   **Directory Name Generation**: The script automatically generates a directory name from the summarized feature description by:
    - Converting the description to lowercase
    - Replacing all non-alphanumeric characters with hyphens
    - Removing consecutive hyphens
    - Trimming leading and trailing hyphens
    - Truncating to a maximum of 65 characters
    - Example: "High-Value Field Redaction & Structured Context" → "high-value-field-redaction---structured-context"
+
+**Git Branch Management** (Manual):
+
+The system no longer automatically creates git branches. If you want to use git branches:
+
+1. Create your branch manually before or after running sdd-specify:
+
+   ```bash
+   git checkout -b feat/your-feature-name
+   ```
+
+2. The directory name will follow the same naming convention for consistency
+
+3. This gives you full control over your git workflow
 
 1.5. **Load Reference Folder (if provided)**: If the user specified a reference folder with `-ref <folder_name>`:
 

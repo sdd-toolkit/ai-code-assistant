@@ -12,9 +12,9 @@ flowchart TD
     LoadBranching --> ValidateBranch{Validate against<br/>branching rules}
 
     ValidateBranch -->|Invalid| ErrorBranch[ERROR: Branch name violates<br/>branching standards<br/>STOP]
-    ValidateBranch -->|Valid| CreateBranch[Create compliant branch name<br/>type/short-description]
+    ValidateBranch -->|Valid| CreateDirName[Create compliant directory name<br/>type/short-description]
 
-    CreateBranch --> RunScript[Run: create-new-feature.sh<br/>Parse JSON output]
+    CreateDirName --> RunScript[Run: create-new-feature.sh<br/>Parse JSON output]
 
     RunScript --> PostValidate{Re-validate<br/>generated branch}
 
@@ -35,9 +35,7 @@ flowchart TD
 
     AddRefSection --> CreateSpec
 
-    CreateSpec --> CreateBranchGit[Create Git branch and switch]
-
-    CreateBranchGit --> Done([Complete: Spec created<br/>Ready for @sdd-plan])
+    CreateSpec --> Done([Complete: Spec created<br/>Branch: Manual if desired<br/>Ready for @sdd-plan])
 
     style Start fill:#e1f5ff
     style Done fill:#d4edda
@@ -66,7 +64,13 @@ flowchart TD
 ## Output Files
 
 - `.specify/specs/feature-name/spec.md` - Feature specification
-- Git branch created: `type/feature-description`
+- Directory name follows branch naming convention: `type/feature-description`
+
+**Note**: Create your git branch manually if desired:
+
+```bash
+git checkout -b feat/feature-name
+```
 
 ## Next Step
 

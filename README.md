@@ -190,27 +190,42 @@ Branch names must follow proper naming conventions and be descriptive.
 
 **Enhanced with Reference Context:**
 
-```bash
+````bash
 # 1. Create reference folder with requirements (optional - can be done once and reused)
 mkdir -p .specify/reference/user-authentication
 # Edit .specify/reference/user-authentication/README.md with requirements
 
-# 2. Create specification with reference context (outputs branch name)
+# 2. Create specification with reference context (outputs directory name)
 @sdd-specify user authentication with login and logout -ref user-authentication
 # Output: Branch created: feat/user-authentication-with-login-logout
 
+**Note**: Git branch management is manual. The system generates branch-compatible directory names, but you control your git workflow:
+
+```bash
+# Create your branch manually
+git checkout -b feat/your-feature-name
+
+# Then create the specification
+@sdd-specify "feat/your feature description"
+````
+
 # 3. Generate plan (automatically uses Reference Context from spec.md)
+
 @sdd-plan feat/user-authentication-with-login-logout
 
 # 4. Create tasks (automatically uses Reference Context from spec.md)
+
 @sdd-tasks feat/user-authentication-with-login-logout
 
 # 5. Execute implementation (automatically uses Reference Context from spec.md)
+
 @sdd-implement feat/user-authentication-with-login-logout
 
 # 6. Validate implementation quality
+
 @sdd-audit feat/user-authentication-with-login-logout
-```
+
+````
 
 **Using Different Branch Types:**
 
@@ -229,7 +244,7 @@ mkdir -p .specify/reference/user-authentication
 
 # Combined with reference folder
 @sdd-specify payment processing -type feat -ref payment-patterns
-```
+````
 
 **Working with Multiple Specs:**
 
@@ -252,7 +267,6 @@ The toolkit uses an optimized reference context system that **loads once and reu
 ### How It Works
 
 1. **During `@sdd-specify <description> -ref <folder>`**:
-
    - Loads all files from `.specify/reference/<folder>/`
    - Extracts and categorizes insights:
      - Architecture & Patterns
@@ -337,7 +351,7 @@ EOF
 
 **Specification Creation**
 
-- Creates feature branches automatically
+- Creates feature directories with branch-compatible naming
 - Supports explicit branch type specification via `-type` (defaults to `feat`)
 - Supports reference context via `-ref <folder>`
 - Generates structured spec.md with requirements
