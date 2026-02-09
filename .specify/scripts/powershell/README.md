@@ -34,12 +34,12 @@ pwsh
 
 ### Core Scripts
 
-| Script                   | Description                    | Usage                                     |
-| ------------------------ | ------------------------------ | ----------------------------------------- |
-| `common.ps1`             | Shared function library        | Sourced by other scripts                  |
-| `create-new-feature.ps1` | Create new feature with branch | `.\create-new-feature.ps1 "Feature Name"` |
-| `scaffold-new-spec.ps1`  | Scaffold new spec folder       | `.\scaffold-new-spec.ps1 "Feature Name"`  |
-| `get-feature-paths.ps1`  | Display feature paths          | `.\get-feature-paths.ps1`                 |
+| Script                   | Description                  | Usage                                     |
+| ------------------------ | ---------------------------- | ----------------------------------------- |
+| `common.ps1`             | Shared function library      | Sourced by other scripts                  |
+| `create-new-feature.ps1` | Create new feature directory | `.\create-new-feature.ps1 "Feature Name"` |
+| `scaffold-new-spec.ps1`  | Scaffold new spec folder     | `.\scaffold-new-spec.ps1 "Feature Name"`  |
+| `get-feature-paths.ps1`  | Display feature paths        | `.\get-feature-paths.ps1`                 |
 
 ### Planning & Tasks
 
@@ -69,8 +69,11 @@ pwsh
 ### 1. Create a New Feature
 
 ```powershell
-# Create new feature and branch
+# Create new feature directory
 .\create-new-feature.ps1 "User Authentication"
+
+# Manually create git branch if desired
+git checkout -b feat/user-authentication
 
 # Output:
 # BRANCH_NAME: user-authentication

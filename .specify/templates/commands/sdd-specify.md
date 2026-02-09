@@ -56,13 +56,13 @@ The user will provide a feature description and optionally a reference folder fo
 
    Do not proceed with any further steps.
 
-0.1. **Summarize the feature description**: After validating the prefix, create a concise summary of the feature description that is 80 characters or less. This summary should capture the essential meaning while preserving the required type prefix and being suitable for use as a git branch name. Preserve key technical terms and maintain clarity.
+0.1. **Summarize the feature description**: After validating the prefix, create a concise summary of the feature description that is 80 characters or less. This summary should capture the essential meaning while preserving the required type prefix and being suitable for use as a directory name. Preserve key technical terms and maintain clarity.
 
 1. Run the script `.specify/scripts/bash/create-new-feature.sh --json "<summarized_description_with_prefix>"` from repo root and parse its JSON output for BRANCH_NAME and SPEC_FILE. All file paths must be absolute.
    **IMPORTANT** You must only ever run this script once. The JSON is provided in the terminal as output - always refer to it to get the actual content you're looking for.
    **NOTE** Branch names are automatically generated from the summarized description (max 65 chars after transformation).
 
-   **Branch Name Generation**: The script automatically generates a git branch name from the summarized feature description by:
+   **Directory Name Generation**: The script automatically generates a directory name from the summarized feature description by:
    - Converting the description to lowercase
    - Replacing all non-alphanumeric characters with hyphens
    - Removing consecutive hyphens
