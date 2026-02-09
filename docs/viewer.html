@@ -327,7 +327,7 @@ flowchart TD
         S2 --> S3{Validate branch name}
         S3 -->|Invalid| S4[Error: Fix branch name]
         S3 -->|Valid| S5[Create spec.md]
-        S5 --> S6[Create Git branch]
+        S5 --> S6[Create feature directory]
     end
 
     subgraph plan["@sdd-plan - Design Implementation"]
@@ -451,8 +451,8 @@ flowchart TD
       <div id="diagram-specify" class="diagram-container" role="tabpanel" aria-labelledby="tab-specify" hidden>
         <h2 class="diagram-title">@sdd-specify - Create Feature Specification</h2>
         <p class="diagram-description">
-          Validates branching standards, creates a feature specification, and sets up the Git branch for development.
-          Optional reference context can be loaded for reuse.
+          Validates naming standards, creates a feature specification with branch-compatible directory naming. Optional
+          reference context can be loaded for reuse.
         </p>
         <div class="diagram-content">
           <pre class="mermaid">
@@ -490,9 +490,9 @@ flowchart TD
 
     AddRefSection --> CreateSpec
 
-    CreateSpec --> CreateBranchGit[Create Git branch and switch]
+    CreateSpec --> Done[Complete: Feature directory created]
 
-    CreateBranchGit --> Done([Complete: Spec created<br/>Ready for @sdd-plan])
+    Done([Complete: Spec created<br/>Ready for @sdd-plan])
 
     style Start fill:#e1f5ff
     style Done fill:#d4edda
