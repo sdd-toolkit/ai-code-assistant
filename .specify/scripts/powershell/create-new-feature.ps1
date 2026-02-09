@@ -1,4 +1,4 @@
-# Create a new feature with branch, directory structure, and template
+# Create a new feature directory structure and template
 #Requires -Version 5.1
 
 param(
@@ -40,13 +40,6 @@ if (-not (Test-Path $specsDir)) {
 
 # Convert feature description to branch name
 $branchName = $featureDescription.ToLower() -replace '[^a-z0-9]+', '-' -replace '^-|-$', ''
-
-# Create new branch
-git checkout -b "$branchName"
-if ($LASTEXITCODE -ne 0) {
-    Write-Error "Failed to create branch: $branchName"
-    exit 1
-}
 
 $featureDir = (Join-Path $specsDir $branchName)
 New-Item -ItemType Directory -Path $featureDir -Force | Out-Null

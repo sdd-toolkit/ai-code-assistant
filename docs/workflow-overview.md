@@ -8,7 +8,7 @@ flowchart TB
         S1[User provides feature description]
         S2[Optional: -ref reference-folder]
         S3[Validate branching standards]
-        S4[Create Git branch]
+        S4[Create feature directory]
         S5[Generate spec.md]
         S6[Store reference context if provided]
 
@@ -108,7 +108,8 @@ flowchart TB
 **Key Features**:
 
 - Validates against branching standards
-- Creates Git branch automatically
+- Creates feature directory with branch-compatible naming
+- Git branch management is manual
 - Optional reference context for enhanced specs
 - Stores reference metadata for downstream use
 
