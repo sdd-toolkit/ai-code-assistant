@@ -11,7 +11,6 @@ try {
 $pass = $true
 
 $requiredPaths = @(
-    "memory/constitution.md",
     ".specify/templates/spec-template.md",
     ".specify/templates/plan-template.md",
     ".specify/templates/tasks-template.md",

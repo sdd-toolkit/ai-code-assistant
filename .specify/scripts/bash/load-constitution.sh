@@ -51,7 +51,7 @@ else
       SECTIONS=("core" "testing" "security" "observability" "architecture" "branching")
       ;;
     frontend)
-      SECTIONS=("core" "testing" "architecture" "optional" "branching")
+      SECTIONS=("core" "testing" "architecture" "user-interface" "branching")
       ;;
     infra)
       SECTIONS=("core" "security" "observability" "branching")
@@ -63,7 +63,7 @@ else
       SECTIONS=("testing" "branching")
       ;;
     full)
-      SECTIONS=("core" "testing" "security" "observability" "architecture" "optional" "branching")
+      SECTIONS=("core" "testing" "security" "observability" "architecture" "user-interface" "branching")
       ;;
     *)
       echo "Error: Unknown preset '$INPUT'" >&2

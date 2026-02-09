@@ -65,14 +65,14 @@ if ($Help) {
     Write-Host ""
     Write-Host "Presets:" -ForegroundColor Yellow
     Write-Host "  • backend    - Core + Testing + Security + Observability + Architecture + Branching" -ForegroundColor White
-    Write-Host "  • frontend   - Core + Testing + Architecture + Optional + Branching" -ForegroundColor White
+    Write-Host "  • frontend   - Core + Testing + Architecture + User-Interface + Branching" -ForegroundColor White
     Write-Host "  • infra      - Core + Security + Observability + Branching" -ForegroundColor White
     Write-Host "  • core       - Core + Branching (default)" -ForegroundColor White
     Write-Host "  • testing    - Testing + Branching" -ForegroundColor White
     Write-Host "  • full       - All available sections" -ForegroundColor White
     Write-Host ""
     Write-Host "Custom sections (comma-separated):" -ForegroundColor Yellow
-    Write-Host "  Available: core, testing, security, observability, architecture, optional, branching" -ForegroundColor White
+    Write-Host "  Available: core, testing, security, observability, architecture, user-interface, branching" -ForegroundColor White
     Write-Host ""
     Write-Host "Examples:" -ForegroundColor Yellow
     Write-Host "  pwsh .\load-constitution.ps1" -ForegroundColor Green
@@ -200,7 +200,7 @@ if ($Input -match ',') {
         
         if ($invalidSections.Count -gt 0) {
             Write-Warning "Invalid sections detected: $($invalidSections -join ', ')"
-            Write-Host "Valid sections are: core, testing, security, observability, architecture, optional, branching" -ForegroundColor Yellow
+            Write-Host "Valid sections are: core, testing, security, observability, architecture, user-interface, branching" -ForegroundColor Yellow
         }
         
         if ($validSections.Count -gt 0) {
@@ -220,7 +220,7 @@ if ($sections.Count -eq 0) {
             $sections = @("core", "testing", "security", "observability", "architecture", "branching")
         }
         "frontend" {
-            $sections = @("core", "testing", "architecture", "optional", "branching")
+            $sections = @("core", "testing", "architecture", "user-interface", "branching")
         }
         "infra" {
             $sections = @("core", "security", "observability", "branching")
@@ -232,7 +232,7 @@ if ($sections.Count -eq 0) {
             $sections = @("testing", "branching")
         }
         "full" {
-            $sections = @("core", "testing", "security", "observability", "architecture", "optional", "branching")
+            $sections = @("core", "testing", "security", "observability", "architecture", "user-interface", "branching")
         }
         default {
             Write-Host "=== Constitution Loader Error ===" -ForegroundColor Red
@@ -241,14 +241,14 @@ if ($sections.Count -eq 0) {
             Write-Host ""
             Write-Host "Available presets:" -ForegroundColor Cyan
             Write-Host "  • backend    - Core + Testing + Security + Observability + Architecture + Branching" -ForegroundColor White
-            Write-Host "  • frontend   - Core + Testing + Architecture + Optional + Branching" -ForegroundColor White
+            Write-Host "  • frontend   - Core + Testing + Architecture + User-Interface + Branching" -ForegroundColor White
             Write-Host "  • infra      - Core + Security + Observability + Branching" -ForegroundColor White
             Write-Host "  • core       - Core + Branching (default)" -ForegroundColor White
             Write-Host "  • testing    - Testing + Branching" -ForegroundColor White
             Write-Host "  • full       - All available sections" -ForegroundColor White
             Write-Host ""
             Write-Host "Or use comma-separated section list:" -ForegroundColor Cyan
-            Write-Host "  Available sections: core, testing, security, observability, architecture, optional, branching" -ForegroundColor White
+            Write-Host "  Available sections: core, testing, security, observability, architecture, user-interface, branching" -ForegroundColor White
             Write-Host ""
             Write-Host "Example usage:" -ForegroundColor Cyan
             Write-Host "  pwsh .\load-constitution.ps1 `"core`"" -ForegroundColor Green
