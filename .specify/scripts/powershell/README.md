@@ -61,7 +61,7 @@ pwsh
 
 | Script                     | Description                   | Usage                                     |
 | -------------------------- | ----------------------------- | ----------------------------------------- |
-| `load-constitution.ps1`    | Load constitutional standards | `.\load-constitution.ps1 [preset]`        |
+| `load-constitution.ps1`    | Load constitutional standards | `.\load-constitution.ps1`                 |
 | `update-agent-context.ps1` | Update agent context files    | `.\update-agent-context.ps1 [agent-type]` |
 
 ## Usage Examples
@@ -118,15 +118,11 @@ pwsh
 ### 5. Load Constitution Standards
 
 ```powershell
-# Load core standards
-.\load-constitution.ps1 core
-
-# Load backend preset
-.\load-constitution.ps1 backend
-
-# Load custom sections
-.\load-constitution.ps1 "core,testing,security"
+# Auto-load all constitution sections
+.\load-constitution.ps1
 ```
+
+**Note**: The script automatically discovers and loads all constitution files from `.specify/memory/constitution/` (or templates if not initialized). No parameters needed.
 
 ## Common Options
 

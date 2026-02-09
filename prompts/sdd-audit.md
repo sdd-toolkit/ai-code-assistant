@@ -17,7 +17,6 @@ The user **MUST** provide a feature name. This parameter is compulsory.
 ### Steps
 
 1. **Validate feature name parameter**:
-
    - **If no feature name provided**: ERROR "Feature name is required. Usage: @sdd-audit <feature-name>"
    - **If feature name provided**: Continue with the specified feature
    - Verify the feature exists in `specs/`
@@ -27,14 +26,12 @@ The user **MUST** provide a feature name. This parameter is compulsory.
    - Run `.specify/scripts/{{SCRIPT_LANG}}/check-prerequisites{{SCRIPT_EXT}} <feature-name> --json --require-tasks` to validate and parse SPEC_FILE and AVAILABLE_DOCS. All paths must be absolute.
 
 2. **Verify required files exist**:
-
    - spec.md (required)
    - plan.md (required)
    - tasks.md (required)
    - If any missing: ERROR "Cannot audit without complete specification, plan, and tasks"
 
 3. **Load the audit template**:
-
    - Use `.specify/templates/audit-template.md` as the structure
    - Set Input to feature directory path
    - Run the Execution Flow (main) function steps 1-9
@@ -42,31 +39,31 @@ The user **MUST** provide a feature name. This parameter is compulsory.
    - Follow error handling and gate checks as specified
 
 4. **Load and analyze specification documents**:
-
    - Read spec.md for requirements and acceptance criteria
    - Read plan.md for technical design and architecture
    - Read tasks.md for implementation expectations
    - **If Reference Context exists**: Use documented patterns and standards
    - Note all functional and non-functional requirements
 
-5. **Load Constitutional Standards (Progressive - Phase 1)**: Start with critical sections for initial audit:
-
-   **Phase 1 - Critical Compliance** (Always Load):
+5. **Load Constitutional Standards**: Load all constitution sections for comprehensive audit:
 
    ```{{SCRIPT_LANG}}
-   .specify/scripts/{{SCRIPT_LANG}}/load-constitution{{SCRIPT_EXT}} "core,testing,security,branching"
+   .specify/scripts/{{SCRIPT_LANG}}/load-constitution{{SCRIPT_EXT}}
    ```
 
    **Sections Loaded**:
-
    - **core**: Technology stack, coding standards, error handling, validation
    - **testing**: Coverage requirements, test organization, security testing
    - **security**: Security principles, secrets management, input validation
-   - **branching**: Git workflow, commit standards
+   - **architecture**: Service patterns, API design, database usage
+   - **observability**: Structured logging, metrics, tracing
+   - **user-interface**: UI/UX standards (if applicable)
+   - **branching**: Git workflow, commit standards (from git-workflow.yaml)
 
-   **Purpose**: Phase 1 covers most common compliance issues.
+   **Purpose**: All sections are loaded for comprehensive compliance checking.
 
-6. Audit the implementation (Phase 1 - Initial Assessment): - **Requirements Coverage**: Verify all functional requirements (FR-XXX) are implemented
+6. Audit the implementation against all constitutional standards:
+   - **Requirements Coverage**: Verify all functional requirements (FR-XXX) are implemented
 
    - **Acceptance Criteria**: Test against each acceptance scenario from spec.md
    - **Technical Alignment**: Compare implementation against plan.md architecture
@@ -86,47 +83,13 @@ The user **MUST** provide a feature name. This parameter is compulsory.
      - Input sanitization
      - Authentication/authorization
      - Security logging
+   - **Architecture**: Service patterns, API design, database usage
+   - **Observability**: Structured logging, metrics, tracing
    - **Branching Compliance**: Verify branch names and commits follow standards
 
-   **Calculate Phase 1 Quality Score**: Based on core, testing, security, and branching compliance.
+   **Calculate Quality Score**: Based on compliance across all loaded sections.
 
-7. **Progressive Loading (Phase 2) - If Issues Detected**: Load additional sections only if Phase 1 reveals specific issues:
-
-   ```{{SCRIPT_LANG}}
-   # Load architecture section if architectural issues detected
-   if [[ $architecture_issues_found == true ]]; then
-     .specify/scripts/{{SCRIPT_LANG}}/load-constitution{{SCRIPT_EXT}} "architecture"
-   fi
-
-   # Load observability section if logging/monitoring issues detected
-   if [[ $observability_issues_found == true ]]; then
-     .specify/scripts/{{SCRIPT_LANG}}/load-constitution{{SCRIPT_EXT}} "observability"
-   fi
-
-   # Load operations section if deployment/config issues detected
-   if [[ $operations_issues_found == true ]]; then
-     .specify/scripts/{{SCRIPT_LANG}}/load-constitution{{SCRIPT_EXT}} "operations"
-   fi
-   ```
-
-   **Phase 2 - Deep Dive Auditing**: Audit against additionally loaded sections:
-
-   - **Architecture**: Service patterns, API design, database usage (if loaded)
-   - **Observability**: Structured logging, metrics, tracing (if loaded)
-   - **Operations**: Feature toggles, dependency management, versioning (if loaded)
-
-8. **Progressive Loading (Phase 3) - If Score < 80%**: Load remaining sections for comprehensive review:
-
-   ```{{SCRIPT_LANG}}
-   if [[ $overall_score < 80 ]]; then
-     .specify/scripts/{{SCRIPT_LANG}}/load-constitution{{SCRIPT_EXT}} "optional"
-   fi
-   ```
-
-   **Phase 3 - Comprehensive Audit**: Review documentation standards, glossary, enforcement policies.
-
-9. Compare against specification expectations:
-
+7. Compare against specification expectations:
    - Identify missing functionality
    - Note incomplete tasks
    - Flag deviations from technical plan
@@ -139,7 +102,7 @@ The user **MUST** provide a feature name. This parameter is compulsory.
      - **Medium**: Code quality issues, minor deviations, documentation gaps
      - **Low**: Style inconsistencies, optimization opportunities
 
-10. Calculate compliance metrics:
+8. Calculate compliance metrics:
 
 - Requirements coverage: (Implemented FRs / Total FRs) × 100
 - Task completion: (Completed tasks / Total tasks) × 100

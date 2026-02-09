@@ -25,13 +25,11 @@ The user will provide a feature description and optionally a reference folder fo
 ### Steps
 
 0. **Validate Branch Type Prefix**: Before proceeding, ensure the feature description includes a valid branch type prefix according to the modular constitution branching standards:
-
    - **REQUIRED**: The description MUST start with one of: `feat/`, `fix/`, `chore/`, `refactor/`, `test/`, `docs/`, `hotfix/`, `maintenance/`
    - **STOP AND ERROR**: If no valid prefix is provided, immediately stop processing and inform the user they must specify a branch type prefix
    - **Constitution Reference**: Per `.specify/memory/git-workflow.yaml` "Branching and Repository Standards", all branches must follow the `type/short-description` pattern
 
    **Valid Examples**:
-
    - ✅ `feat/user-authentication-system`
    - ✅ `fix/payment-timeout-issue`
    - ✅ `docs/api-documentation-update`
@@ -43,7 +41,7 @@ The user will provide a feature description and optionally a reference folder fo
    ```
    ERROR: Invalid branch type prefix provided.
 
-   The feature description must start with a valid branch type according to the constitution.md Branch Naming standards.
+   The feature description must start with a valid branch type according to the git-workflow.yaml branching standards.
 
    Required format: type/description
    Valid types: feat, fix, chore, refactor, test, docs, hotfix, maintenance
@@ -65,7 +63,6 @@ The user will provide a feature description and optionally a reference folder fo
    **NOTE** Branch names are automatically generated from the summarized description (max 65 chars after transformation).
 
    **Branch Name Generation**: The script automatically generates a git branch name from the summarized feature description by:
-
    - Converting the description to lowercase
    - Replacing all non-alphanumeric characters with hyphens
    - Removing consecutive hyphens
