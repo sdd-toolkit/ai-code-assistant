@@ -12,7 +12,7 @@ TEMPLATE_DIR=".specify/templates/constitution"
 MEMORY_DIR=".specify/memory"
 
 # Determine which constitution directory to use (memory first, then templates)
-if [[ -d "$MEMORY_DIR/constitution" ]] && [[ -n $(ls -A "$MEMORY_DIR/constitution"/*.md 2>/dev/null) ]]; then
+if [[ -d "$MEMORY_DIR/constitution" ]] && [[ -n $(ls -A "$MEMORY_DIR/constitution"/ 2>/dev/null) ]]; then
     CONSTITUTION_DIR="$MEMORY_DIR/constitution"
     LOCATION="memory (project-specific)"
 else
@@ -20,16 +20,36 @@ else
     LOCATION="templates (default)"
 fi
 
-# Function to load a markdown section
+# Function to load a constitution section (supports any file type)
 load_section() {
   local section="$1"
   local filename="$2"
   
   if [[ -f "$filename" ]]; then
+    local ext="${filename##*.}"
     echo ""
     echo "<!-- Constitution Section: $section -->"
     echo ""
-    cat "$filename"
+    case "$ext" in
+      md)
+        cat "$filename"
+        ;;
+      yaml|yml)
+        echo '```yaml'
+        cat "$filename"
+        echo '```'
+        ;;
+      json)
+        echo '```json'
+        cat "$filename"
+        echo '```'
+        ;;
+      *)
+        echo '```'
+        cat "$filename"
+        echo '```'
+        ;;
+    esac
     echo ""
     echo "---"
     echo ""
@@ -38,17 +58,18 @@ load_section() {
   fi
 }
 
-# Discover all constitution markdown files
+# Discover all constitution files
 declare -a SECTIONS=()
 declare -a FILENAMES=()
 if [[ -d "$CONSTITUTION_DIR" ]]; then
   while IFS= read -r file; do
-    section=$(basename "$file" .md)
-    # Skip template suffix if present
+    filename=$(basename "$file")
+    # Derive section name: strip extension, then strip -template suffix
+    section="${filename%.*}"
     section="${section%-template}"
     SECTIONS+=("$section")
     FILENAMES+=("$file")
-  done < <(find "$CONSTITUTION_DIR" -maxdepth 1 -name "*.md" -type f | sort)
+  done < <(find "$CONSTITUTION_DIR" -maxdepth 1 -type f | sort)
 fi
 
 # Print header
