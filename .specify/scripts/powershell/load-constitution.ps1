@@ -51,7 +51,7 @@ $memoryConstitutionDir = (Join-CrossPlatformPath @($memoryDir, "constitution"))
 $constitutionDir = ""
 $location = ""
 
-if ((Test-Path $memoryConstitutionDir) -and ((Get-ChildItem -Path $memoryConstitutionDir -Filter "*.md" -File -ErrorAction SilentlyContinue).Count -gt 0)) {
+if ((Test-Path $memoryConstitutionDir) -and ((Get-ChildItem -Path $memoryConstitutionDir -File -ErrorAction SilentlyContinue).Count -gt 0)) {
     $constitutionDir = $memoryConstitutionDir
     $location = "memory (project-specific)"
 } else {
@@ -59,7 +59,7 @@ if ((Test-Path $memoryConstitutionDir) -and ((Get-ChildItem -Path $memoryConstit
     $location = "templates (default)"
 }
 
-# Function to load a markdown section
+# Function to load a constitution section (supports any file type)
 function Load-Section {
     param(
         [string]$Section,
@@ -67,10 +67,30 @@ function Load-Section {
     )
     
     if (Test-Path $FileName) {
+        $ext = [System.IO.Path]::GetExtension($FileName).TrimStart('.')
         Write-Output ""
         Write-Output "<!-- Constitution Section: $Section -->"
         Write-Output ""
-        Get-Content $FileName -Encoding UTF8 | Write-Output
+        switch ($ext) {
+            'md' {
+                Get-Content $FileName -Encoding UTF8 | Write-Output
+            }
+            { $_ -in 'yaml', 'yml' } {
+                Write-Output '```yaml'
+                Get-Content $FileName -Encoding UTF8 | Write-Output
+                Write-Output '```'
+            }
+            'json' {
+                Write-Output '```json'
+                Get-Content $FileName -Encoding UTF8 | Write-Output
+                Write-Output '```'
+            }
+            default {
+                Write-Output '```'
+                Get-Content $FileName -Encoding UTF8 | Write-Output
+                Write-Output '```'
+            }
+        }
         Write-Output ""
         Write-Output "---"
         Write-Output ""
@@ -79,14 +99,14 @@ function Load-Section {
     }
 }
 
-# Discover all constitution markdown files
+# Discover all constitution files
 $sections = @()
 $filenames = @()
 if (Test-Path $constitutionDir) {
-    $files = Get-ChildItem -Path $constitutionDir -Filter "*.md" -File | Sort-Object Name
+    $files = Get-ChildItem -Path $constitutionDir -File | Sort-Object Name
     foreach ($file in $files) {
+        # Derive section name: strip extension, then strip -template suffix
         $section = $file.BaseName
-        # Skip template suffix if present
         $section = $section -replace '-template$', ''
         $sections += $section
         $filenames += $file.FullName

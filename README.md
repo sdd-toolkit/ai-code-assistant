@@ -65,12 +65,12 @@ Use the project-local install in the Installation Guide: see [INSTALL.md — Git
 
    ```
    @sdd-specify user authentication system
-   # Output: Branch Name: feat/user-authentication-system
+   # Output: Feature Directory: user-authentication-system
 
-   @sdd-plan feat/user-authentication-system
-   @sdd-tasks feat/user-authentication-system
-   @sdd-implement feat/user-authentication-system
-   @sdd-audit user-authentication-system
+   @sdd-plan feat_user-authentication-system
+   @sdd-tasks feat_user-authentication-system
+   @sdd-implement feat_user-authentication-system
+   @sdd-audit feat_user-authentication-system
    ```
 
 ## Why Markdown for LLM Consistency
@@ -182,9 +182,11 @@ Branch names must follow proper naming conventions and be descriptive.
 ```bash
 @sdd-init  # Initialize project constitution first
 @sdd-specify JWT-based user authentication with login/logout
-@sdd-plan feat/jwt-based-user-authentication-with-login-logout
-@sdd-tasks feat/jwt-based-user-authentication-with-login-logout
-@sdd-implement feat/jwt-based-user-authentication-with-login-logout
+# Output: Feature Directory: jwt-based-user-authentication-with-login-logout
+
+@sdd-plan jwt-based-user-authentication-with-login-logout
+@sdd-tasks jwt-based-user-authentication-with-login-logout
+@sdd-implement jwt-based-user-authentication-with-login-logout
 @sdd-audit jwt-based-user-authentication-with-login-logout  # Audit specific feature
 ```
 
@@ -326,10 +328,10 @@ EOF
 | `@sdd-init`      | Create/update project constitution with versioning             | `@sdd-init`                                                                             |
 | `@sdd-drift`     | Detect constitutional drift and generate realignment TODO list | `@sdd-drift`                                                                            |
 | `@sdd-specify`   | Create feature specifications from descriptions                | `@sdd-specify <description>` or `@sdd-specify <description> -type <type> -ref <folder>` |
-| `@sdd-plan`      | Generate implementation plans and design artifacts             | `@sdd-plan <feature-name>`                                                              |
-| `@sdd-tasks`     | Create dependency-ordered task breakdowns                      | `@sdd-tasks <feature-name>`                                                             |
-| `@sdd-implement` | Execute implementation following task plan                     | `@sdd-implement <feature-name>`                                                         |
-| `@sdd-audit`     | Validate implementation against specification                  | `@sdd-audit <feature-name>`                                                             |
+| `@sdd-plan`      | Generate implementation plans and design artifacts             | `@sdd-plan <folder-name>`                                                               |
+| `@sdd-tasks`     | Create dependency-ordered task breakdowns                      | `@sdd-tasks <folder-name>`                                                              |
+| `@sdd-implement` | Execute implementation following task plan                     | `@sdd-implement <folder-name>`                                                          |
+| `@sdd-audit`     | Validate implementation against specification                  | `@sdd-audit <folder-name>`                                                              |
 
 ### Prompt Details
 
@@ -351,16 +353,16 @@ EOF
 
 **Specification Creation**
 
-- Creates feature directories with branch-compatible naming
+- Creates feature directories with descriptive naming
 - Supports explicit branch type specification via `-type` (defaults to `feat`)
 - Supports reference context via `-ref <folder>`
 - Generates structured spec.md with requirements
-- Outputs branch name for easy checkout
+- Outputs feature directory name (use this for subsequent commands)
 - Optimized: Loads reference files once, stores summary
 
 **Implementation Planning**
 
-- Requires feature name parameter (compulsory)
+- Requires feature folder name parameter (compulsory)
 - Generates multi-phase design artifacts
 - Integrates constitutional requirements
 - Uses Reference Context from spec (no re-loading)
@@ -368,7 +370,7 @@ EOF
 
 **Task Generation**
 
-- Requires feature name parameter (compulsory)
+- Requires feature folder name parameter (compulsory)
 - Dependency-ordered task lists (TDD approach)
 - Marks parallel tasks with [P]
 - Uses Reference Context patterns
@@ -376,7 +378,7 @@ EOF
 
 **Implementation Execution**
 
-- Requires feature name parameter (compulsory)
+- Requires feature folder name parameter (compulsory)
 - Executes tasks in dependency order
 - Marks completed tasks as [X]
 - Respects parallel vs sequential constraints
@@ -385,8 +387,8 @@ EOF
 **Implementation Audit**
 
 - Validates implementation against specification after `@sdd-implement`
-- Requires feature name parameter (compulsory)
-- Usage: `@sdd-audit <feature-name>`
+- Requires feature folder name parameter (compulsory)
+- Usage: `@sdd-audit <folder-name>`
 - Audits a single feature specification at a time
 - Checks requirements coverage, acceptance criteria, task completion
 - Audits code quality, testing, error handling, and security
