@@ -6,7 +6,7 @@ A vendor-neutral installation guide for setting up SDD prompts with GitHub Copil
 
 ### GitHub Copilot (Project-Local) — Recommended
 
-**Bash:**
+**Zsh:**
 
 ```bash
 TEMP_DIR="/tmp/sdd-toolkit-install-$$" && \
@@ -92,7 +92,7 @@ Next: Continue with the Quick Start in the README to generate your first spec: s
 
 ### Alternative: Amazon Q Developer (Global)
 
-**Bash:**
+**Zsh:**
 
 ```bash
 mkdir -p ~/.aws/amazonq/prompts && \

@@ -9,7 +9,7 @@ ROOT_DIR=$(git rev-parse --show-toplevel 2>/dev/null || echo ".")
 PASS=true
 
 required_paths=(
-  "memory/constitution.md"
+  "memory/constitution"
   ".specify/templates/spec-template.md"
   ".specify/templates/plan-template.md"
   ".specify/templates/tasks-template.md"
@@ -21,7 +21,7 @@ required_paths=(
 
 echo "[spec:check] Validating required structure..."
 for p in "${required_paths[@]}"; do
-  if [[ ! -f "$ROOT_DIR/$p" ]]; then
+  if [[ ! -e "$ROOT_DIR/$p" ]]; then
     echo "[MISSING] $p" >&2
     PASS=false
   else
