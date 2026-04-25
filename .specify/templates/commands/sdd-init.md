@@ -104,11 +104,12 @@ Follow this execution flow:
 7. Write the completed constitution back to `.specify/memory/constitution/<file>.md` (overwrite the specific file(s) being updated in the memory folder).
 
 8. Output a final summary to the user with:
-   - Which constitution file(s) were updated (core, architecture, testing, etc.)
-   - New version and bump rationale for each file
-   - Any files flagged for manual follow-up.
-   - Suggested commit message (e.g., `docs: update constitution/core.md to v2.1.0 (add TypeScript strict mode requirement)`).
-   - Reminder about the modular constitution system and how other prompts load only relevant sections
+
+- Which constitution file(s) were updated (core, architecture, testing, etc.)
+- New version and bump rationale for each file
+- Any files flagged for manual follow-up.
+- Suggested commit message (e.g., `docs: update constitution/core.md to v2.1.0 (tighten validation requirements)`).
+- Reminder about the modular constitution system and how other prompts load only relevant sections
 
 Formatting & Style Requirements:
 

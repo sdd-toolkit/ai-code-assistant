@@ -5,7 +5,7 @@ flowchart TD
     Start([User: @sdd-plan or @sdd-plan feature-name]) --> CheckFeature{Feature name<br/>provided?}
 
     CheckFeature -->|Yes| UseProvided[Use specified feature]
-    CheckFeature -->|No| ListSpecs[List .specify/specs/ directories]
+    CheckFeature -->|No| ListSpecs[List specs/ directories]
 
     ListSpecs --> CountSpecs{How many<br/>specs found?}
 
@@ -18,12 +18,12 @@ flowchart TD
 
     RunSetup --> ReadSpec[Read feature specification<br/>spec.md]
 
-    ReadSpec --> CheckRefInSpec{Reference folder<br/>in spec metadata?}
+    ReadSpec --> CheckRefFile{reference-context.md<br/>exists?}
 
-    CheckRefInSpec -->|Yes| LoadRefFolder[Load reference folder<br/>.specify/reference/folder-name/]
-    CheckRefInSpec -->|No| LoadConstitution
+    CheckRefFile -->|Yes| LoadRefContext[Load reference-context.md<br/>from feature directory]
+    CheckRefFile -->|No| LoadConstitution
 
-    LoadRefFolder --> LoadConstitution[Load Constitutional Standards<br/>load-constitution.sh<br/>core,architecture,testing,branching]
+    LoadRefContext --> LoadConstitution[Load Constitutional Standards<br/>load-constitution.sh<br/>core,architecture,testing,branching]
 
     LoadConstitution --> LoadTemplate[Load plan-template.md<br/>copied to plan.md]
 
@@ -37,12 +37,12 @@ flowchart TD
     ExecutePhase1 --> GateCheck1{Gate check:<br/>Artifacts complete?}
 
     GateCheck1 -->|No| ErrorGate1[ERROR: Artifacts incomplete<br/>Review and complete]
-    GateCheck1 -->|Yes| ExecutePhase2[Phase 2: Task Breakdown<br/>Generate tasks.md preview<br/>- Dependency ordered<br/>- Parallel markers]
+    GateCheck1 -->|Yes| ExecutePhase2[Phase 2: Task Planning Approach<br/>Describe dependency order<br/>- Parallel markers<br/>- Implementation sequencing]
 
-    ExecutePhase2 --> GateCheck2{Gate check:<br/>Tasks complete?}
+    ExecutePhase2 --> GateCheck2{Gate check:<br/>Planning complete?}
 
-    GateCheck2 -->|No| ErrorGate2[ERROR: Tasks incomplete<br/>Review and complete]
-    GateCheck2 -->|Yes| VerifyArtifacts[Verify all artifacts created:<br/>- research.md ✓<br/>- data-model.md ✓<br/>- contracts/ ✓<br/>- quickstart.md ✓<br/>- tasks.md ✓]
+    GateCheck2 -->|No| ErrorGate2[ERROR: Planning incomplete<br/>Review and complete]
+    GateCheck2 -->|Yes| VerifyArtifacts[Verify planning artifacts created:<br/>- plan.md ✓<br/>- research.md ✓<br/>- data-model.md ✓<br/>- contracts/ ✓<br/>- quickstart.md ✓]
 
     VerifyArtifacts --> UpdateProgress[Update Progress Tracking<br/>All phases complete]
 
@@ -63,9 +63,9 @@ flowchart TD
 ## Key Decision Points
 
 1. **Feature Selection**: Auto-detect if only one spec exists
-2. **Reference Context**: Automatically loaded if specified in spec.md
+2. **Reference Context**: `reference-context.md` is loaded from the feature directory when present
 3. **Gate Checks**: Each phase must complete before proceeding
-4. **Artifact Verification**: All required files must be generated
+4. **Artifact Verification**: All required planning artifacts must be generated before `@sdd-tasks`
 
 ## Phase Breakdown
 
@@ -78,22 +78,22 @@ flowchart TD
 ### Phase 1: Design Artifacts
 
 - **data-model.md**: Entities, relationships, validation
-- **contracts/**: API endpoints, request/response formats
+- **contracts/**: Contract or interface definitions
 - **quickstart.md**: Integration test scenarios
 
-### Phase 2: Task Breakdown
+### Phase 2: Task Planning Approach
 
-- Dependency-ordered task list
-- Parallel execution markers
-- TDD approach (tests before implementation)
+- Dependency ordering strategy
+- Parallel execution rules
+- TDD-oriented implementation sequencing
 
 ## Output Files
 
-- `.specify/specs/feature-name/plan.md` - Implementation plan
-- `.specify/specs/feature-name/research.md` - Technical research
-- `.specify/specs/feature-name/data-model.md` - Data models
-- `.specify/specs/feature-name/contracts/` - API contracts
-- `.specify/specs/feature-name/quickstart.md` - Test scenarios
+- `specs/feature-name/plan.md` - Implementation plan
+- `specs/feature-name/research.md` - Technical research
+- `specs/feature-name/data-model.md` - Data models
+- `specs/feature-name/contracts/` - Contracts or interface definitions
+- `specs/feature-name/quickstart.md` - Test scenarios
 
 ## Next Step
 

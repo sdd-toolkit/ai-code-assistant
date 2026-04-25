@@ -28,10 +28,10 @@ rm -rf "$TEMP_DIR"
 
 ```powershell
 # Cross-platform temp directory
-$tempPath = if ($IsWindows -or $env:OS -eq "Windows_NT") { 
-    $env:TEMP 
-} else { 
-    if ($env:TMPDIR) { $env:TMPDIR } else { "/tmp" } 
+$tempPath = if ($IsWindows -or $env:OS -eq "Windows_NT") {
+    $env:TEMP
+} else {
+    if ($env:TMPDIR) { $env:TMPDIR } else { "/tmp" }
 }
 $tempDir = Join-Path $tempPath "sdd-toolkit-install-$(Get-Random)"
 
@@ -89,6 +89,7 @@ Write-Host "✅ SDD Toolkit installation complete!" -ForegroundColor Green
 - Creates `.github/prompts/` directory in your project
 - Replaces placeholders (`{{SCRIPT_EXT}}` and `{{SCRIPT_LANG}}`) with appropriate values for your shell
 - Copies all prompt files with `.prompt.md` extension (Copilot requirement)
+- Runtime prompt source of truth is `prompts/*.md` in the toolkit repository; installed prompt files are generated copies
 - `.specify/` folder downloaded and extracted to temporary location
 - Copies the complete `.specify/` directory structure to your project (excludes `git-workflow.yaml` on first install, preserves existing `memory/` folder on updates)
 - All subsequent prompt invocations will use the local `.specify/` configuration
@@ -146,6 +147,7 @@ Write-Host "✅ Amazon Q prompts and .specify directory installed successfully!"
 - Clones the latest toolkit from GitHub
 - Replaces placeholders (`{{SCRIPT_EXT}}` and `{{SCRIPT_LANG}}`) with appropriate values for your shell
 - Copies all prompt files (`.md`)
+- Runtime prompt source of truth is `prompts/*.md` in the toolkit repository; installed prompt files are generated copies
   **What this does:**
 
 - Copies the complete `.specify/` directory structure (excludes `git-workflow.yaml` on first install, preserves existing `memory/` folder on updates)

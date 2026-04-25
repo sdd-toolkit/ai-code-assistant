@@ -157,21 +157,21 @@ Branch names must follow proper naming conventions and be descriptive.
 │    @sdd-specify     │───▶│    @sdd-plan     │───▶│   @sdd-tasks    │───▶│ @sdd-implement  │───▶│   @sdd-audit    │
 │  -ref <folder>  │    │              │    │             │    │             │    │             │
 │                 │    │              │    │             │    │             │    │             │
-│ Loads reference │    │ Uses stored  │    │ Applies     │    │ Executes    │    │ Validates   │
-│ folder ONCE     │    │ Reference    │    │ Reference   │    │ code        │    │ quality     │
-│ Summarizes into │    │ Context from │    │ Context     │    │             │    │             │
-│ spec.md         │    │ spec.md      │    │ patterns    │    │             │    │             │
+│ Loads reference │    │ Uses         │    │ Applies     │    │ Executes    │    │ Validates   │
+│ folder ONCE     │    │ reference    │    │ reference   │    │ code        │    │ quality     │
+│ Writes spec.md  │    │ context from │    │ context     │    │             │    │             │
+│ + sidecar file  │    │ sidecar file │    │ patterns    │    │             │    │             │
 └─────────────────┘    └──────────────┘    └─────────────┘    └─────────────┘    └─────────────┘
         │                      │                   │
         ▼                      │                   │
 ┌─────────────────┐            │                   │
-│ Reference       │            │                   │
-│ Context Section │◀───────────┴───────────────────┘
-│ in spec.md      │
-│                 │  • Architecture & Patterns
-│ Stored ONCE,    │  • Code Examples & Interfaces
-│ Used 3x         │  • Configuration & Setup
-│                 │  • Testing Approaches
+│ reference-      │            │                   │
+│ context.md      │◀───────────┴───────────────────┘
+│ in feature dir  │
+│                 │  • Business-Relevant Signals
+│ Stored ONCE,    │  • Design & Interaction Signals
+│ Reused later    │  • Technical Observations
+│                 │  • Validation & Testing Signals
 └─────────────────┘  • Referenced Files
 ```
 
@@ -211,15 +211,15 @@ git checkout -b feat/your-feature-name
 @sdd-specify "feat/your feature description"
 ````
 
-# 3. Generate plan (automatically uses Reference Context from spec.md)
+# 3. Generate plan (automatically uses reference-context.md when present)
 
 @sdd-plan feat/user-authentication-with-login-logout
 
-# 4. Create tasks (automatically uses Reference Context from spec.md)
+# 4. Create tasks (automatically uses reference-context.md when present)
 
 @sdd-tasks feat/user-authentication-with-login-logout
 
-# 5. Execute implementation (automatically uses Reference Context from spec.md)
+# 5. Execute implementation (uses plan/tasks outputs created from reference-context.md when present)
 
 @sdd-implement feat/user-authentication-with-login-logout
 
@@ -260,7 +260,7 @@ git checkout -b feat/your-feature-name
 @sdd-audit payment-system
 ```
 
-This generates design documents, creates a task list, and implements the feature following your project's constitutional principles. Reference folders in `.specify/reference/` provide structured context that is loaded once during specification and reused throughout the workflow.
+This generates design documents, creates a task list, and implements the feature following your project's constitutional principles. Reference folders in `.specify/reference/` provide structured context that is loaded once during specification and written to `reference-context.md` for downstream planning and task generation.
 
 ## Reference Context System
 
@@ -271,14 +271,15 @@ The toolkit uses an optimized reference context system that **loads once and reu
 1. **During `@sdd-specify <description> -ref <folder>`**:
    - Loads all files from `.specify/reference/<folder>/`
    - Extracts and categorizes insights:
-     - Architecture & Patterns
-     - Code Examples & Interfaces
-     - Configuration & Setup
-     - Testing Approaches
-   - Stores comprehensive summary in spec.md's **Reference Context** section
+     - Business-Relevant Signals
+     - Design & Interaction Signals
+     - Technical Observations
+     - Validation & Testing Signals
+   - Writes business-facing requirements to `spec.md`
+   - Writes supplementary context to `reference-context.md`
 
 2. **During `@sdd-plan` and `@sdd-tasks`**:
-   - Reads the Reference Context section from spec.md
+   - Reads `reference-context.md` from the feature folder when present
    - Uses pre-analyzed insights without re-loading files
    - 50-70% faster with consistent context across stages
 
@@ -286,8 +287,39 @@ The toolkit uses an optimized reference context system that **loads once and reu
 
 - **Performance**: Files loaded once instead of 3 times (67% reduction)
 - **Consistency**: Single source of truth across all stages
-- **Transparency**: All insights documented and reviewable in spec.md
+- **Transparency**: Business requirements stay in `spec.md`, supplementary context stays in `reference-context.md`
 - **Efficiency**: Reduced token usage and faster execution
+
+## Maintainer Sync Checklist
+
+Use this checklist whenever prompt or template behavior changes:
+
+- Update each pair together: `.specify/templates/commands/sdd-specify.md` and `prompts/sdd-specify.md`
+- Update each pair together: `.specify/templates/commands/sdd-plan.md` and `prompts/sdd-plan.md`
+- Update each pair together: `.specify/templates/commands/sdd-tasks.md` and `prompts/sdd-tasks.md`
+- Update each pair together: `.specify/templates/commands/sdd-implement.md` and `prompts/sdd-implement.md`
+- Confirm usage, arguments, output examples, and path examples match the current `specs/<feature>/...` model
+- Confirm business-only `spec.md` behavior and `reference-context.md` behavior match across command templates and runtime prompts
+- Confirm plan and task generation rules stay behaviorally aligned after edits
+- Confirm shared prompts and templates stay technology agnostic before repo analysis; stack-specific detail belongs in instantiated constitutions and generated repo-grounded artifacts, not in shared scaffolding
+- Confirm `contracts/` is described as optional and generic across plan, tasks, and implement surfaces rather than as an API-only default
+- Confirm long sections are necessary for the primary execution path; move tutorial or authoring detail to docs when it is not execution-critical
+- Confirm persistent artifact paths stay feature-local, repo-relative, or current-workspace-derived; reject foreign absolute paths
+
+## Agnosticism Boundary
+
+- Shared workflow prompts, command templates, and generic output templates must stay technology agnostic before repo inspection.
+- Instantiated constitution files may contain stack-specific standards once they are grounded in the actual project.
+- Generated `plan.md`, `research.md`, `quickstart.md`, and `tasks.md` may contain stack-specific detail when that detail comes from the real repo, constitution, or validated feature context.
+
+## Example Guardrails
+
+Keep examples balanced across feature shapes so the prompts do not learn one default architecture:
+
+- UI-only interaction feature: prefer existing view, state, styling, accessibility, and manual-validation surfaces without inventing backend layers
+- Backend or service feature: prefer existing service, boundary, or contract surfaces only when the repo and feature justify them
+- Library or utility change: prefer focused module, helper, or file-processing surfaces without inventing page-level or API-level artifacts
+- Do not treat API contracts, service layers, or integration suites as the default answer for every feature
 
 ### Creating Reference Folders
 
@@ -312,9 +344,9 @@ As a [user], I want [goal] so that [benefit].
 - **Entity1**: fields, relationships
 - **Entity2**: fields, relationships
 
-## Technical Constraints
-- Performance: [requirements]
-- Security: [requirements]
+## Business Rules
+- Rule 1: [constraint or validation]
+- Rule 2: [business logic]
 EOF
 
 # Use in workflow
@@ -348,7 +380,7 @@ EOF
 - Identifies gaps and violations
 - Prioritizes drift items by severity (Critical/High/Medium/Low)
 - Includes security drift checks
-- Generates `.specify/specs/CONSTITUTION_DRIFT.md` with realignment tasks
+- Generates `specs/CONSTITUTION_DRIFT.md` with realignment tasks
 - Overwrites existing drift report on each run for fresh analysis
 
 **Specification Creation**
@@ -365,7 +397,7 @@ EOF
 - Requires feature folder name parameter (compulsory)
 - Generates multi-phase design artifacts
 - Integrates constitutional requirements
-- Uses Reference Context from spec (no re-loading)
+- Uses `reference-context.md` from the feature folder when present
 - Creates: research.md, data-model.md, contracts/, quickstart.md
 
 **Task Generation**
@@ -373,7 +405,7 @@ EOF
 - Requires feature folder name parameter (compulsory)
 - Dependency-ordered task lists (TDD approach)
 - Marks parallel tasks with [P]
-- Uses Reference Context patterns
+- Uses `reference-context.md` patterns when present
 - Phase-based: Setup → Tests → Core → Integration → Polish
 
 **Implementation Execution**
@@ -395,7 +427,7 @@ EOF
 - Calculates compliance metrics (requirements %, task %, test coverage)
 - Identifies issues by severity (Critical/High/Medium/Low)
 - Generates quality scores and production readiness assessment
-- Creates feature-specific `AUDIT.md` in `.specify/specs/<feature>/`
+- Creates feature-specific `AUDIT.md` in `specs/<feature>/`
 - Overwrites existing audit report on each run for fresh validation
 
 ## Documentation

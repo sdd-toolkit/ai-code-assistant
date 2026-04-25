@@ -5,7 +5,7 @@ flowchart TD
     Start([User: @sdd-tasks or @sdd-tasks feature-name]) --> CheckFeature{Feature name<br/>provided?}
 
     CheckFeature -->|Yes| UseProvided[Use specified feature]
-    CheckFeature -->|No| ListSpecs[List .specify/specs/ directories]
+    CheckFeature -->|No| ListSpecs[List specs/ directories]
 
     ListSpecs --> CountSpecs{How many<br/>specs found?}
 
@@ -25,7 +25,7 @@ flowchart TD
     LoadDataModel -->|No| LoadContracts
 
     ReadDataModel --> LoadContracts{contracts/<br/>exists?}
-    LoadContracts -->|Yes| ReadContracts[Read API endpoints]
+    LoadContracts -->|Yes| ReadContracts[Read contract or interface definitions]
     LoadContracts -->|No| LoadResearch
 
     ReadContracts --> LoadResearch{research.md<br/>exists?}
@@ -36,12 +36,12 @@ flowchart TD
     LoadQuickstart -->|Yes| ReadQuickstart[Read test scenarios]
     LoadQuickstart -->|No| CheckRef
 
-    ReadQuickstart --> CheckRef{Reference folder<br/>in spec.md?}
+    ReadQuickstart --> CheckRef{reference-context.md<br/>exists?}
 
-    CheckRef -->|Yes| LoadRefFolder[Load reference context<br/>from spec metadata]
+    CheckRef -->|Yes| LoadRefFolder[Load reference-context.md<br/>from feature directory]
     CheckRef -->|No| DetectTaskType
 
-    LoadRefFolder --> DetectTaskType[Detect task types needed: Testing tasks?; API or endpoint tasks?; Infrastructure tasks?; Mixed or general tasks?]
+    LoadRefFolder --> DetectTaskType[Detect task types needed: Testing tasks?; Contract or interface work?; Integration or cross-cutting work?; Mixed or general tasks?]
 
     DetectTaskType --> LoadConstitution[Load Constitutional Standards<br/>Based on task type:<br/>testing → testing,branching<br/>API → core,architecture,security,branching<br/>infra → core,operations,security,branching<br/>mixed → core,testing,architecture,branching]
 
@@ -51,9 +51,9 @@ flowchart TD
 
     GenerateSetup --> GenerateTests[Generate Test Tasks (P): Contract tests per endpoint; Integration tests per scenario; Mark as parallel (P)]
 
-    GenerateTests --> GenerateCore[Generate Core Tasks: Model per entity; Service per business logic; Endpoint per contract; Sequential if same file]
+    GenerateTests --> GenerateCore[Generate Core Tasks: Model or state per concept; Workflow or service per behavior; Interface or contract implementation; Sequential if same file]
 
-    GenerateCore --> GenerateIntegration[Generate Integration Tasks: Database connections; Middleware setup; Logging configuration; External service integration]
+    GenerateCore --> GenerateIntegration[Generate Integration Tasks: Cross-boundary integrations; Logging or observability; Accessibility or responsive behavior when required]
 
     GenerateIntegration --> GeneratePolish[Generate Polish Tasks (P): Unit tests; Performance optimization; Documentation; Mark as parallel (P)]
 
@@ -63,7 +63,7 @@ flowchart TD
 
     MarkParallel --> AddCheckboxes[Ensure all tasks have checkbox format: e.g. T001 Task description]
 
-    AddCheckboxes --> CreateTaskFile[Create tasks.md in<br/>.specify/specs/feature-name/]
+    AddCheckboxes --> CreateTaskFile[Create tasks.md in<br/>specs/feature-name/]
 
     CreateTaskFile --> IncludeExamples[Include parallel execution<br/>examples with Task agent<br/>commands]
 
@@ -90,9 +90,9 @@ flowchart TD
 
 ### From Artifacts
 
-- **Each contract** → Contract test task [P]
+- **Each contract** → Verification task [P]
 - **Each entity** → Model creation task [P]
-- **Each endpoint** → Implementation task (sequential if shared files)
+- **Each contract or interface obligation** → Implementation task (sequential if shared files)
 - **Each user story** → Integration test [P]
 
 ### Parallelization Logic
@@ -117,15 +117,15 @@ flowchart TD
 
 ### 3. Core
 
-- Models (parallel if different files)
-- Services (sequential if dependencies)
-- Endpoints (based on file sharing)
+- Models or states (parallel if different files)
+- Workflows or services (sequential if dependencies)
+- Interfaces or contract implementations (based on file sharing)
 
 ### 4. Integration
 
-- Database connections
-- Middleware
-- Logging
+- Cross-boundary integrations
+- Observability and logging
+- Accessibility and responsive behavior when required
 - External services
 
 ### 5. Polish [P]
@@ -137,7 +137,7 @@ flowchart TD
 
 ## Output Files
 
-- `.specify/specs/feature-name/tasks.md` - Dependency-ordered task list
+- `specs/feature-name/tasks.md` - Dependency-ordered task list
 
 ## Next Step
 

@@ -38,7 +38,7 @@ The following GitHub prompts have been successfully ported to Amazon Q format:
   - Coding standards verification
   - Prioritized drift items (Critical/High/Medium/Low)
   - Drift score calculation
-  - Generates `.specify/specs/CONSTITUTION_DRIFT.md` with realignment tasks
+  - Generates `specs/CONSTITUTION_DRIFT.md` with realignment tasks
   - Overwrites existing report on each run
 
 ### 3. SSD Specify Prompt (`@sdd-specify`)
@@ -48,11 +48,11 @@ The following GitHub prompts have been successfully ported to Amazon Q format:
 - **Usage**: `@sdd-specify <feature_description>` or `@sdd-specify <feature_description> -ref <folder>`
 - **Key Features**:
   - Automatic branch creation (feature-name format)
-  - Creates new feature directory in `.specify/specs/<feature-name>/`
+  - Creates new feature directory in `specs/<feature-name>/`
   - Template-based specification generation
   - Reference context support via `-ref <folder>`
-  - **Optimized**: Loads reference files ONCE and stores summary in spec.md
-  - **Reference Context Section**: Architecture, patterns, examples, testing approaches
+  - **Optimized**: Loads reference files ONCE and splits outputs between `spec.md` and `reference-context.md`
+  - `spec.md` remains business-focused while `reference-context.md` carries supplementary design and technical context
   - Integration with `.specify/scripts/bash/create-new-feature.sh`
   - Branching standards validation before feature creation
 
@@ -63,11 +63,11 @@ The following GitHub prompts have been successfully ported to Amazon Q format:
 - **Usage**: `@sdd-plan` (auto-detects feature) or `@sdd-plan <feature-name>` (explicit feature)
 - **Key Features**:
   - **Multi-spec support**: Works with projects that have multiple feature specs
-  - Auto-selects feature if only one exists in `.specify/specs/`
+  - Auto-selects feature if only one exists in `specs/`
   - Requires feature name if multiple specs exist
   - Multi-phase artifact generation (research.md, data-model.md, contracts/, quickstart.md)
   - Constitutional requirement integration
-  - **Optimized**: Uses Reference Context from spec.md (no re-loading)
+  - **Optimized**: Uses `reference-context.md` from the feature folder when present
   - Pre-analyzed insights for consistent design decisions
   - Absolute path handling for file operations
   - Modular constitution loading (only loads relevant sections)
@@ -79,13 +79,13 @@ The following GitHub prompts have been successfully ported to Amazon Q format:
 - **Usage**: `@sdd-tasks` (auto-detects feature) or `@sdd-tasks <feature-name>` (explicit feature)
 - **Key Features**:
   - **Multi-spec support**: Works with projects that have multiple feature specs
-  - Auto-selects feature if only one exists in `.specify/specs/`
+  - Auto-selects feature if only one exists in `specs/`
   - Requires feature name if multiple specs exist
   - Parallel task identification with [P] markers
   - TDD-based task ordering (tests before implementation)
   - File-based coordination rules
   - Phase-based execution (Setup → Tests → Core → Integration → Polish)
-  - **Optimized**: Uses Reference Context patterns from spec.md
+  - **Optimized**: Uses `reference-context.md` patterns from the feature folder when present
   - Applies documented conventions to task descriptions
   - Context-aware constitution loading (only loads sections relevant to task type)
 
@@ -96,7 +96,7 @@ The following GitHub prompts have been successfully ported to Amazon Q format:
 - **Usage**: `@sdd-implement` (auto-detects feature) or `@sdd-implement <feature-name>` (explicit feature)
 - **Key Features**:
   - **Multi-spec support**: Works with projects that have multiple feature specs
-  - Auto-selects feature if only one exists in `.specify/specs/`
+  - Auto-selects feature if only one exists in `specs/`
   - Requires feature name if multiple specs exist
   - Phase-by-phase execution
   - Dependency respect (sequential vs parallel)
@@ -124,7 +124,7 @@ The following GitHub prompts have been successfully ported to Amazon Q format:
   - Quality score calculation
   - Issue prioritization by severity (Critical/High/Medium/Low)
   - Production readiness assessment
-  - Generates feature-specific `AUDIT.md` in `.specify/specs/<feature>/`
+  - Generates feature-specific `AUDIT.md` in `specs/<feature>/`
   - Overwrites existing audit on each run
 
 ## Key Adaptations for Amazon Q
@@ -134,7 +134,7 @@ The following GitHub prompts have been successfully ported to Amazon Q format:
 3. **Maintained script integration**: All bash script calls preserved for compatibility
 4. **Preserved workflow logic**: Complete execution flows maintained from original prompts
 5. **Added Amazon Q context**: Prompts work within Amazon Q's file operation capabilities
-6. **Optimized reference context**: Load once, reuse 3× for better performance
+6. **Optimized reference context**: Load once, reuse via `reference-context.md`
 
 ## Reference Context Optimization
 
@@ -148,9 +148,9 @@ The toolkit now uses an optimized reference context system:
 
 **After (Load Once, Reuse)**:
 
-- `@sdd-specify -ref <folder>`: Load reference files ➜ Summarize ➜ Store in spec.md
-- `@sdd-plan`: Read Reference Context from spec.md ➜ Generate plan
-- `@sdd-tasks`: Read Reference Context from spec.md ➜ Generate tasks
+- `@sdd-specify -ref <folder>`: Load reference files ➜ Write business-facing content to `spec.md` and supplementary context to `reference-context.md`
+- `@sdd-plan`: Read `reference-context.md` from the feature folder when present ➜ Generate plan
+- `@sdd-tasks`: Read `reference-context.md` from the feature folder when present ➜ Generate tasks
 
 **Benefits**:
 
@@ -158,7 +158,7 @@ The toolkit now uses an optimized reference context system:
 - 50-70% reduction in token usage
 - Faster execution times
 - Consistent context across all stages
-- Explicit documentation of insights in spec.md
+- Business spec stays clean while supplementary insights remain documented in `reference-context.md`
 
 ## Usage Instructions
 
@@ -173,11 +173,11 @@ To use these prompts in Amazon Q:
 7. Type `@sdd-implement` to execute the implementation plan (auto-detects feature or specify with `@sdd-implement <feature-name>`)
 8. Type `@sdd-audit <feature-name>` to validate implementation quality and specification alignment
 
-**Feature Name**: The feature name is the directory name in `.specify/specs/` (e.g., `user-authentication`, `payment-processing`)
+**Feature Name**: The feature name is the directory name in `specs/` (e.g., `user-authentication`, `payment-processing`)
 
 **Multi-Spec Projects**: When working with multiple features:
 
-- Each feature lives in its own directory: `.specify/specs/<feature-name>/`
+- Each feature lives in its own directory: `specs/<feature-name>/`
 - Prompts auto-detect if only one feature exists
 - If multiple features exist, you must specify which one: `@sdd-plan user-authentication`
 - Lists available features in error message if you forget to specify
@@ -215,7 +215,7 @@ To use these prompts in Amazon Q:
 ✅ All prompts created successfully in `~/.aws/amazonq/prompts/`
 ✅ SSD Init prompt (formerly constitution) for project initialization
 ✅ Drift detection prompt added for constitutional drift monitoring
-✅ Reference Context optimization implemented (load once, reuse 3×)
+✅ Reference context sidecar artifact implemented (`reference-context.md`)
 ✅ Multi-spec support added to plan, tasks, implement, and audit prompts
 ✅ Feature auto-detection for single-spec projects
 ✅ Clear error messaging when multiple specs exist

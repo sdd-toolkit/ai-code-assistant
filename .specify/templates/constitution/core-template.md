@@ -44,16 +44,12 @@ Project: [PROJECT_NAME]
 | **Validation**     | See security-template.md      | MUST        |
 | **DTOs/Models**    | [DTO_NAMING_CONVENTIONS]      | MUST        |
 
-### Error Handling Example
+### Error Handling Pattern
 
-```typescript
-try {
-  const result = await operation();
-  return result;
-} catch (error) {
-  logger.error("Operation failed", { correlationId, error });
-  throw error;
-}
+```text
+Attempt the operation.
+If it fails, record the allowed diagnostic context defined by observability standards.
+Return, translate, or propagate the error without losing the original cause.
 ```
 
 ### Core Requirements

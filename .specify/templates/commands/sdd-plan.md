@@ -11,11 +11,13 @@ Execute the implementation planning workflow using the plan template to generate
    - The feature requirements and user stories
    - Functional and non-functional requirements
    - Success criteria and acceptance criteria
-   - Any technical constraints or dependencies mentioned
-   - **Check for Reference Context section**:
-     - If present: Use the summarized insights (architecture, patterns, code examples, configuration, testing approaches)
-     - This provides pre-analyzed context without re-loading files
-     - Reference the "Key Insights" and "Referenced Files" for design decisions and consistency
+   - Business constraints and dependencies described in the spec
+   - **Check for `reference-context.md` in the feature directory**:
+     - If present: Use its design, interaction, technical, and validation signals as supplemental planning input
+     - Keep `spec.md` as the business-only source of user intent and requirements
+       - Use constitution memory as the source of technical standards, verification guidance, and stack-specific constraints
+   - Perform an explicit repo-structure and tooling check before making artifact decisions
+   - Derive all repo paths, commands, tooling claims, and touched areas from the current repository state and script-returned paths only
 
 3. **Load Constitutional Standards**: Execute `.specify/scripts/bash/load-constitution.sh` to auto-load all constitution sections:
 
@@ -40,16 +42,29 @@ Execute the implementation planning workflow using the plan template to generate
    - Run the Execution Flow (main) function steps 1-9
    - The template is self-contained and executable
    - Follow error handling and gate checks as specified
+   - Reject persistent artifact paths that point outside the active workspace or feature directory; if a foreign absolute path appears, replace it with the current workspace-derived path or omit it
+   - Start with repo reality, existing touched areas, and the minimal change hypothesis before proposing new structure
+   - Derive verification strategy from constitution and existing repo tooling before selecting artifacts
+   - Surface missing prerequisites discovered in the repo so they can become setup tasks later
+   - Reject unnecessary layers when the feature is UI-only, prototype-only, or otherwise narrow in scope
+   - Prefer the lightest structured contract artifact that still preserves observable obligations; when multiple branches, preconditions, or terminal outcomes exist, prefer structure over loose prose
+   - Do not add derived behavior unless it is required by the spec, validated reference context, or constitution; if a derived constraint is required, record it explicitly in research and design artifacts
+   - If automated verification would require tooling the repo does not currently have, record the gap and keep the plan on supported verification paths
    - Let the template guide artifact generation in $SPECS_DIR:
      - Phase 0 generates research.md
-     - Phase 1 generates data-model.md, contracts/, quickstart.md
-     - Phase 2 generates tasks.md
+       - Phase 1 generates data-model.md and quickstart.md, plus only the smallest justified artifacts under `contracts/` when a structured contract artifact is actually needed
+       - Phase 2 describes the task-generation approach (does not create tasks.md)
+   - If `reference-context.md` exists, use it to enrich research, design, and quickstart outputs without changing the normal flow for features that do not have design references
+   - Ensure reference-context-driven user-visible states, validation cues, accessibility expectations, and terminal behaviors appear in `quickstart.md` and task-planning guidance when relevant
+   - Keep repo-structure and gap detection prompt-driven in this first pass; do not require helper-script metadata beyond the current returned paths
    - Incorporate user-provided details from arguments into Technical Context
+   - Maintain a lightweight Coverage Block in `plan.md` mapping `AC-*`, `FR-*`, and `EC-*` items to design and verification outputs
+   - Keep Progress Tracking aligned with /plan scope only; leave Phase 3 and later unchecked during /plan
    - Update Progress Tracking as you complete each phase
 
 5. Verify execution completed:
-   - Check Progress Tracking shows all phases complete
-   - Ensure all required artifacts were generated
+   - Check Progress Tracking shows the planning phases are complete
+   - Ensure all required planning artifacts were generated inside the feature folder
    - Confirm no ERROR states in execution
 
 6. Report results with branch name, file paths, and generated artifacts.
