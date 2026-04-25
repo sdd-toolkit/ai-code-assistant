@@ -38,23 +38,25 @@ The user **MUST** provide a feature name. This parameter is compulsory.
 
 3. Load and analyze the implementation context:
    - **REQUIRED**: Read tasks.md for the complete task list and execution plan
-   - **REQUIRED**: Read plan.md for tech stack, architecture, and file structure
-   - **IF EXISTS**: Read data-model.md for entities and relationships
-   - **IF EXISTS**: Read contracts/ for API specifications and test requirements
+   - **REQUIRED**: Read plan.md for selected touched areas, implementation shape, verification strategy, repo constraints, and prohibited behaviors
+   - **IF EXISTS**: Read data-model.md for entities, stateful concepts, or schemas when the task plan requires them
+   - **IF EXISTS**: Read contracts/ for justified contract or interface artifacts and their externally observable obligations
    - **IF EXISTS**: Read research.md for technical decisions and constraints
-   - **IF EXISTS**: Read quickstart.md for integration scenarios
+   - **IF EXISTS**: Read quickstart.md for manual validation scenarios and observable outcomes
+   - **IF EXISTS**: Read reference-context.md for supplemental design, interaction, accessibility, and validation signals that affect implementation or verification
 
-4. **Load Constitutional Standards (Just-In-Time)**: Analyze the task being implemented and load only relevant sections:
+4. **Load Constitutional Standards (Task-Shaped Application)**: Analyze the current task and apply the relevant sections without assuming a default backend architecture.
 
-   **File Type Detection Priority (First Match Wins)**:
-   1. If implementing **test files** (`*.test.*`, `*.spec.*`): Load `testing,branching`
-   2. If implementing **auth/security** (`auth*`, `security*`, `validation*`): Load `core,security,branching`
-   3. If implementing **API/routes** (`routes/`, `controllers/`, `endpoints/`): Load `core,architecture,security,branching`
-   4. If implementing **service/business logic** (`services/`, `handlers/`): Load `core,architecture,observability,branching`
-   5. If implementing **database/models** (`models/`, `entities/`, `repositories/`): Load `core,architecture,branching`
-   6. If implementing **config/deployment** (`*.yml`, `*.yaml`, `Dockerfile`): Load `operations,security,branching`
-   7. If implementing **logging/monitoring** (`logger*`, `monitor*`, `metrics*`): Load `observability,branching`
-   8. **DEFAULT**: Load `core,branching`
+   **Task Shape Detection Priority (First Match Wins)**:
+   1. If implementing **verification artifacts** (`*.test.*`, `*.spec.*`, `tests/`, `__tests__/`): Load `testing,branching`
+   2. If implementing **validation, permissions, or sensitive-data handling** (`auth*`, `security*`, `validation*`, `permissions*`, `sanit*`): Load `core,security,branching`
+   3. If implementing **user-facing interaction or accessibility surfaces** (`components/`, `views/`, `pages/`, `screens/`, `ui/`, style assets): Load `core,user-interface,branching`
+   4. If implementing **external interfaces or cross-boundary obligations** (`contracts/`, `events/`, `clients/`, `adapters/`, `routes/`): Load `core,architecture,security,branching`
+   5. If implementing **workflow, state, or business-rule coordination** (`domain/`, `logic/`, `use-cases/`, `workflows/`, `flows/`, `lib/`): Load `core,architecture,observability,branching`
+   6. If implementing **data/state structures or schemas** (`schemas/`, `types/`, `state/`, `records/`, `shared-data/`): Load `core,architecture,branching`
+   7. If implementing **config or deployment surfaces** (`*.yml`, `*.yaml`, `Dockerfile`, `*.json` config): Load `operations,security,branching`
+   8. If implementing **logging, monitoring, or metrics surfaces** (`logger*`, `monitor*`, `metrics*`, telemetry files): Load `observability,branching`
+   9. **DEFAULT**: Load `core,branching`
 
    **Execution**:
 
@@ -62,12 +64,12 @@ The user **MUST** provide a feature name. This parameter is compulsory.
    .specify/scripts/{{SCRIPT_LANG}}/load-constitution{{SCRIPT_EXT}}
    ```
 
-   **Purpose**: Automatically loads all constitution standards for implementation.
+   **Purpose**: Automatically loads all constitution standards for implementation. Apply the relevant sections according to task shape, not according to a fixed service/API/database architecture.
 
    **Note**: Constitution is loaded once at the start of implementation.
 
 5. Parse tasks.md structure and extract:
-   - **Task phases**: Setup, Tests, Core, Integration, Polish
+   - **Task phases**: Setup, Verification, Implementation, Integration, Polish
    - **Task dependencies**: Sequential vs parallel execution rules
    - **Task details**: ID, description, file paths, parallel markers [P]
    - **Execution flow**: Order and dependency requirements
@@ -83,22 +85,24 @@ The user **MUST** provide a feature name. This parameter is compulsory.
    **Execution Rules**:
    - **Phase-by-phase execution**: Complete each phase before moving to the next
    - **Respect dependencies**: Run sequential tasks in order, parallel tasks [P] can run together
-   - **Follow TDD approach**: Execute test tasks before their corresponding implementation tasks
+   - **Follow the plan-selected verification strategy**: Execute verification tasks before dependent implementation tasks when the repo and task plan support that order
    - **File-based coordination**: Tasks affecting the same files must run sequentially
    - **Validation checkpoints**: Verify each phase completion before proceeding
+   - **Artifact-driven execution**: Treat `contracts/` as an optional generic artifact location when present; do not assume API endpoints are the default contract shape
+   - **Repo-driven execution**: Follow the chosen task descriptions and touched files; do not invent model/service/endpoint/database layers that the plan does not justify
    - **Apply Constitutional Standards**: For each implementation, follow:
      - **Coding standards**: Error handling, logging patterns, validation (from core)
-     - **Architectural patterns**: Service structure, API design (from architecture)
+       - **Task-shape patterns**: Interface, workflow, state, or user-interface structure when applicable (from architecture and user-interface)
      - **Testing requirements**: Test organization, coverage, mocking (from testing)
-     - **Security practices**: Input validation, secrets management, auth (from security)
+       - **Security practices**: Input validation, secrets management, permissions, privacy (from security)
      - **Observability**: Structured logging, correlation IDs, metrics (from observability)
 
 7. Implementation execution rules:
-   - **Setup first**: Initialize project structure, dependencies, configuration
-   - **Tests before code**: If you need to write tests for contracts, entities, and integration scenarios
-   - **Core development**: Implement models, services, CLI commands, endpoints
-   - **Integration work**: Database connections, middleware, logging, external services
-   - **Polish and validation**: Unit tests, performance optimization, documentation
+   - **Setup first**: Initialize or adjust only the prerequisites, dependencies, and configuration that the task plan requires
+   - **Verification before implementation**: When the task plan and repo support it, create or run the relevant verification before changing dependent implementation files
+   - **Implementation work**: Implement workflows, interfaces, states, transformations, validations, and user-visible surfaces described by the task plan
+   - **Integration work**: Connect cross-boundary behavior, observability, accessibility, responsive behavior, or external systems only when the task plan requires them
+   - **Polish and validation**: Run supported automated checks, execute manual quickstart scenarios when needed, and update justified documentation
 
 8. Progress tracking and error handling:
 

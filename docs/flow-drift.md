@@ -49,7 +49,7 @@ flowchart TD
 
     GenerateReport[Generate drift report:<br/>- Header with date & score<br/>- Summary statistics<br/>- Section per principle<br/>- Detailed drift items<br/>- Action plan<br/>- Progress tracking]
 
-    GenerateReport --> SaveReport[Save to:<br/>.specify/specs/<br/>CONSTITUTION_DRIFT.md]
+    GenerateReport --> SaveReport[Save to:<br/>specs/<br/>CONSTITUTION_DRIFT.md]
 
     SaveReport --> ShowSummary[Display summary:<br/>- Total drift items by priority<br/>- Compliance percentage<br/>- Drift score<br/>- Next actions<br/>- Timeline suggestions]
 
@@ -352,7 +352,7 @@ One section per constitutional principle:
 ### Primary Output
 
 ```
-.specify/specs/CONSTITUTION_DRIFT.md
+specs/CONSTITUTION_DRIFT.md
 ```
 
 **Contains**: Complete drift analysis with prioritized remediation plan
@@ -370,7 +370,7 @@ One section per constitutional principle:
 @sdd-drift
 
 # Review drift report
-cat .specify/specs/CONSTITUTION_DRIFT.md
+cat specs/CONSTITUTION_DRIFT.md
 
 # Create remediation plan based on priorities
 ```
@@ -382,7 +382,7 @@ cat .specify/specs/CONSTITUTION_DRIFT.md
 @sdd-drift
 
 # Compare with previous report
-git diff HEAD~1 .specify/specs/CONSTITUTION_DRIFT.md
+git diff HEAD~1 specs/CONSTITUTION_DRIFT.md
 
 # Address new drift items
 ```

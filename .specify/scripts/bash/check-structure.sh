@@ -9,14 +9,16 @@ ROOT_DIR=$(git rev-parse --show-toplevel 2>/dev/null || echo ".")
 PASS=true
 
 required_paths=(
-  "memory/constitution"
+  ".specify/templates/constitution"
   ".specify/templates/spec-template.md"
   ".specify/templates/plan-template.md"
   ".specify/templates/tasks-template.md"
-  ".specify/templates/commands/specify.md"
-  ".specify/templates/commands/plan.md"
-  ".specify/templates/commands/tasks.md"
-  ".specify/specs/bootstrap/spec.md"
+  ".specify/templates/commands/sdd-specify.md"
+  ".specify/templates/commands/sdd-plan.md"
+  ".specify/templates/commands/sdd-tasks.md"
+  "prompts/sdd-specify.md"
+  "prompts/sdd-plan.md"
+  "prompts/sdd-tasks.md"
 )
 
 echo "[spec:check] Validating required structure..."

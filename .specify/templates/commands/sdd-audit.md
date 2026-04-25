@@ -54,7 +54,7 @@ Audit the implementation against the specification to validate quality and align
 
 8. Create `FEATURE_DIR/AUDIT.md` following the template format:
    - **IMPORTANT**: If `AUDIT.md` already exists in feature directory, overwrite it
-   - Use absolute path: `[repo-root]/.specify/specs/[feature-name]/AUDIT.md`
+   - Use absolute path: `[repo-root]/specs/[feature-name]/AUDIT.md`
    - Header with audit date, feature name, and quality scores
    - Summary of compliance metrics
    - Requirements coverage section

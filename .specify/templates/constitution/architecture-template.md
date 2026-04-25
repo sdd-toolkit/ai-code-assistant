@@ -12,66 +12,63 @@ Project: [PROJECT_NAME]
 
 ## 1. Architectural Principles
 
-| Principle               | Description                        | Priority |
-| ----------------------- | ---------------------------------- | -------- |
-| **Design Pattern**      | [ARCHITECTURE_PATTERN]             | MUST     |
-| Service Responsibility  | [SERVICE_RESPONSIBILITY_PRINCIPLE] | MUST     |
-| State Management        | [STATE_MANAGEMENT_APPROACH]        | MUST     |
-| Component Separation    | [COMPONENT_SEPARATION_PRINCIPLE]   | MUST     |
-| Data Access Pattern     | [DATA_ACCESS_PATTERN]              | MUST     |
-| Performance Constraints | [PERFORMANCE_REQUIREMENTS]         | SHOULD   |
+| Principle                      | Description                         | Priority |
+| ------------------------------ | ----------------------------------- | -------- |
+| **Design Pattern**             | [ARCHITECTURE_PATTERN]              | MUST     |
+| Responsibility Boundaries      | [RESPONSIBILITY_BOUNDARY_PRINCIPLE] | MUST     |
+| State Management               | [STATE_MANAGEMENT_APPROACH]         | MUST     |
+| Interface Contracts            | [INTERFACE_CONTRACT_PRINCIPLE]      | MUST     |
+| Surface / Component Separation | [SURFACE_SEPARATION_PRINCIPLE]      | MUST     |
+| Integration Boundary Pattern   | [INTEGRATION_BOUNDARY_PATTERN]      | MUST     |
+| Performance Constraints        | [PERFORMANCE_REQUIREMENTS]          | SHOULD   |
 
 ---
 
-## 2. Service Architecture
+## 2. Structure and Boundary Standards
 
-| Component        | Responsibility                   | Pattern              |
-| ---------------- | -------------------------------- | -------------------- |
-| **Handlers**     | [HANDLER_RESPONSIBILITIES]       | [HANDLER_PATTERN]    |
-| **Services**     | [SERVICE_LAYER_RESPONSIBILITIES] | [SERVICE_PATTERN]    |
-| **Repositories** | [REPOSITORY_RESPONSIBILITIES]    | [REPOSITORY_PATTERN] |
-| **Models/DTOs**  | [MODEL_RESPONSIBILITIES]         | [MODEL_PATTERN]      |
-| **Validators**   | [VALIDATOR_RESPONSIBILITIES]     | [VALIDATOR_PATTERN]  |
-| **Middleware**   | [MIDDLEWARE_RESPONSIBILITIES]    | [MIDDLEWARE_PATTERN] |
+| Structure Element                 | Responsibility                 | Pattern               |
+| --------------------------------- | ------------------------------ | --------------------- |
+| **Surface / Entry Points**        | [SURFACE_RESPONSIBILITIES]     | [SURFACE_PATTERN]     |
+| **Workflows / Application Logic** | [WORKFLOW_RESPONSIBILITIES]    | [WORKFLOW_PATTERN]    |
+| **Interfaces / Contracts**        | [INTERFACE_RESPONSIBILITIES]   | [INTERFACE_PATTERN]   |
+| **Data / State Shapes**           | [STATE_SHAPE_RESPONSIBILITIES] | [STATE_SHAPE_PATTERN] |
+| **Validation / Policy Layers**    | [VALIDATION_RESPONSIBILITIES]  | [VALIDATION_PATTERN]  |
+| **Integrations / Adapters**       | [INTEGRATION_RESPONSIBILITIES] | [INTEGRATION_PATTERN] |
 
-### Service Flow Pattern
+### Structure Flow Pattern
 
-[SERVICE_FLOW_PATTERN_DIAGRAM]
+[STRUCTURE_FLOW_PATTERN_DIAGRAM]
 
-### CRUD Operations Standard
+### Interaction / Operation Standards
 
-[CRUD_OPERATIONS_STANDARD_TABLE]
-
----
-
-## 3. Database Design Standards
-
-| Guideline             | Requirement                        | Priority    |
-| --------------------- | ---------------------------------- | ----------- |
-| **Primary Keys**      | [KEY_DEFINITION_REQUIREMENTS]      | MUST        |
-| Partition Key Design  | [PARTITION_KEY_STRATEGY]           | MUST        |
-| Sort Key Design       | [SORT_KEY_STRATEGY]                | SHOULD      |
-| **Secondary Indexes** | [SECONDARY_INDEX_CRITERIA]         | CONDITIONAL |
-| Index Justification   | [INDEX_JUSTIFICATION_REQUIREMENTS] | MUST        |
-| **TTL Configuration** | [TTL_REQUIREMENTS]                 | MUST        |
-| TTL Documentation     | [TTL_DOCUMENTATION_REQUIREMENTS]   | MUST        |
-| **Capacity Mode**     | [CAPACITY_MODE_SELECTION]          | MUST        |
-| On-Demand Mode        | [ON_DEMAND_MODE_POLICY]            | SHOULD      |
-| Provisioned Mode      | [PROVISIONED_MODE_POLICY]          | SHOULD      |
+[INTERACTION_OR_OPERATION_STANDARD]
 
 ---
 
-## 4. Security Architecture
+## 3. State, Persistence, and Schema Standards
 
-| Security Layer            | Requirement                          | Priority | Implementation        |
-| ------------------------- | ------------------------------------ | -------- | --------------------- |
-| **Defense in Depth**      | [DEFENSE_IN_DEPTH_STRATEGY]          | MUST     | Multiple layers       |
-| **Zero Trust**            | [ZERO_TRUST_PRINCIPLES]              | MUST     | Verify everything     |
-| Network Segmentation      | [NETWORK_SEGMENTATION_REQUIREMENTS]  | MUST     | Isolated environments |
-| **Identity Verification** | [IDENTITY_VERIFICATION_REQUIREMENTS] | MUST     | Every access          |
-| **Security Monitoring**   | [SECURITY_MONITORING_REQUIREMENTS]   | MUST     | Real-time detection   |
-| Threat Detection          | [THREAT_DETECTION_MECHANISM]         | MUST     | Automated alerts      |
-| **Audit Logging**         | [AUDIT_LOGGING_REQUIREMENTS]         | MUST     | Immutable logs        |
-| Security Metrics          | [SECURITY_METRICS_COLLECTION]        | SHOULD   | Dashboard monitoring  |
-| **Encryption**            | [ENCRYPTION_STANDARDS]               | MUST     | At rest & in transit  |
-| Key Management            | [KEY_MANAGEMENT_REQUIREMENTS]        | MUST     | Secure key rotation   |
+| Guideline                       | Requirement                    | Priority    |
+| ------------------------------- | ------------------------------ | ----------- |
+| **State Ownership**             | [STATE_OWNERSHIP_REQUIREMENTS] | MUST        |
+| **Identifier Strategy**         | [IDENTIFIER_STRATEGY]          | MUST        |
+| **Schema / Contract Evolution** | [SCHEMA_EVOLUTION_POLICY]      | MUST        |
+| Lookup / Index Strategy         | [LOOKUP_OR_INDEX_STRATEGY]     | CONDITIONAL |
+| Retention / Expiration          | [RETENTION_REQUIREMENTS]       | CONDITIONAL |
+| Synchronization / Consistency   | [CONSISTENCY_REQUIREMENTS]     | SHOULD      |
+| Capacity / Scaling              | [CAPACITY_AND_SCALING_POLICY]  | SHOULD      |
+| Migration / Backfill            | [MIGRATION_POLICY]             | CONDITIONAL |
+
+---
+
+## 4. Security and Trust Boundaries
+
+| Security Layer                   | Requirement                            | Priority | Implementation Guidance                    |
+| -------------------------------- | -------------------------------------- | -------- | ------------------------------------------ |
+| **Defense in Depth**             | [DEFENSE_IN_DEPTH_STRATEGY]            | MUST     | Layer protections appropriately            |
+| **Least Privilege / Zero Trust** | [ZERO_TRUST_PRINCIPLES]                | MUST     | Verify access and intent                   |
+| Identity / Access Control        | [IDENTITY_VERIFICATION_REQUIREMENTS]   | MUST     | Apply where access matters                 |
+| Sensitive Data Handling          | [SENSITIVE_DATA_HANDLING_REQUIREMENTS] | MUST     | Protect storage, transfer, and display     |
+| **Security Monitoring**          | [SECURITY_MONITORING_REQUIREMENTS]     | MUST     | Detect and surface critical events         |
+| Auditability                     | [AUDIT_LOGGING_REQUIREMENTS]           | MUST     | Record required security-relevant actions  |
+| **Encryption**                   | [ENCRYPTION_STANDARDS]                 | MUST     | Apply in transit and at rest when relevant |
+| Key / Secret Management          | [KEY_MANAGEMENT_REQUIREMENTS]          | MUST     | Rotate and store securely                  |

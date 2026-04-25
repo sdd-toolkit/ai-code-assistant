@@ -46,10 +46,10 @@
    → Group items by priority within each principle
    → Include clear descriptions and requirements
    → Suggest implementation approaches
-7. Write output to `.specify/specs/CONSTITUTION_DRIFT.md`:
+7. Write output to `specs/CONSTITUTION_DRIFT.md`:
    → Use absolute path from repository root
    → If file exists, overwrite with new report
-   → Ensure .specify/specs/ directory exists
+   → Ensure specs/ directory exists
 8. Return: SUCCESS with summary statistics and file location
 ```
 

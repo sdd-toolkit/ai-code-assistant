@@ -46,10 +46,6 @@ The user will provide a feature description (first text after the command), opti
 
 **CRITICAL**: Validate that required arguments are provided and that the branch type is valid.
 
-### Validation Requirements
-
-**CRITICAL**: Validate that required arguments are provided and that the branch type is valid.
-
 ### Steps
 
 0. **Parse and Validate Arguments**: Before proceeding, parse the user input and validate:
@@ -155,62 +151,75 @@ The system no longer automatically creates git branches. If you want to use git 
   STOP all processing and do not continue.
 
 - **If folder exists**, load all files in the folder. Extract and summarize:
-  - **Architecture & Patterns**: Code patterns, design decisions, and conventions found
-  - **Code Examples & Interfaces**: API signatures, interfaces, or code patterns to follow
-  - **Configuration & Setup**: Configuration patterns, environment setup, dependencies
-  - **Testing Approaches**: Testing patterns, fixtures, or utilities available
-  - **Key Technical Decisions**: Important technical choices and rationale
+  - **Business-Relevant Signals**: User goals, workflows, validation expectations, visible states, and constraints that belong in the business spec
+  - **Design & Interaction Signals**: Screen or view inventory, interaction states, loading or empty or error states, accessibility cues, and responsive cues
+  - **Terminal Behavior & Scope Guards**: Prototype-only endings, explicit non-goals, forbidden assumptions, prohibited behaviors, and exact user-facing copy when the source clearly specifies it
+  - **Technical Observations**: Implementation-sensitive patterns, component or structure hints, configuration notes, or integration notes
+  - **Validation & Testing Signals**: Testing patterns, fixtures, utilities, or verification notes
+  - **Implementation-Sensitive Assumptions**: Assumptions that help planning or task generation but do not belong in the business spec
 
-Store this as REFERENCE_CONTEXT for inclusion in the spec.
+Store this as REFERENCE_CONTEXT for writing to a separate reference context artifact. Only business-facing signals may be incorporated into the spec itself.
 
 2. Load `.specify/templates/spec-template.md` to understand required sections.
 
 3. Write the specification to SPEC_FILE using the template structure, replacing placeholders with concrete details derived from the feature description and reference folder (if provided) while preserving section order and headings.
+   - Promote each distinct observable success, invalid, empty, error, or terminal scenario into its own acceptance criterion when the prompt or validated reference clearly supports it.
+   - If the prompt or validated reference clearly specifies that user-entered content is treated in a way that affects validation, matching, ordering, eligibility, or user-visible output, record that behavior explicitly in the specification as business-facing behavior. Describe only the observable or decision-relevant effect. Do not describe the implementation mechanism.
+   - Do not infer hidden input-handling rules from visual design alone, and do not infer other behaviors that are not explicitly requested or validated by the prompt or reference material, such as persistence, retries, background side effects, or extra navigation.
+   - Update the Review & Acceptance Checklist and Execution Status so they truthfully reflect the actual completeness of the generated document.
 
-   **If a reference folder was used**, include a **Reference Metadata section at the very top** (before the main feature title):
+   **If a reference folder was used**:
+
+   a) Incorporate only business-facing signals into `spec.md`.
+
+   b) Preserve exact user-facing copy when the reference clearly specifies validation messages, confirmation copy, or terminal user-visible outcomes.
+
+   c) Convert reference scenarios into explicit acceptance criteria, business rules, assumptions and scope boundaries, non-goals, and prohibited behaviors when the source supports them.
+
+   d) Do **not** add reference metadata, technical notes, or a `Reference Context` section to `spec.md`.
+
+   e) Create `reference-context.md` in the same feature directory as `SPEC_FILE` with this structure:
 
    ```markdown
-   > **Reference**: `<folder_name>`
-   >
-   > _This specification uses context from the reference folder to ensure consistency with existing patterns and implementations._
-
-   # [Feature Title]
-
-   [Rest of spec content...]
-   ```
-
-   And include a **Reference Context section after User Stories**:
-
-   ```markdown
-   ## Reference Context
+   # Reference Context: [FEATURE NAME]
 
    **Reference Folder**: `<folder_name>`
-   **Purpose**: Context from existing implementation for consistency and pattern reuse
+   **Purpose**: Supplementary design and technical context for planning and task generation
 
-   ### Key Insights from Reference Material
+   ## Referenced Files
 
-   #### Architecture & Patterns
+   - [List files that were loaded and analyzed]
 
-   [Summarize architectural patterns, design decisions, and conventions found]
+   ## Business-Relevant Signals
 
-   #### Code Examples & Interfaces
+   [Summarize user goals, validation expectations, visible states, and constraints that matter to downstream planning]
 
-   [List relevant API signatures, interfaces, or code patterns to follow]
+   ## Design & Interaction Signals
 
-   #### Configuration & Setup
+   [Summarize screen or view inventory, interaction states, loading or empty or error states, accessibility cues, and responsive cues]
 
-   [Note any configuration patterns, environment setup, or dependencies]
+   ## Terminal Behavior & Scope Guards
 
-   #### Testing Approaches
+   [Summarize explicit non-goals, forbidden assumptions, prohibited behaviors, prototype-only endings, and exact user-facing copy that should be preserved]
 
-   [Document testing patterns, fixtures, or utilities available]
+   ## Technical Observations
 
-   ### Referenced Files
+   [Summarize implementation-sensitive patterns, component or structure hints, configuration notes, and integration notes]
 
-   [List files that were loaded and analyzed]
+   ## Validation & Testing Signals
+
+   [Summarize testing patterns, fixtures, utilities, and verification notes]
+
+   ## Implementation-Sensitive Assumptions
+
+   [Summarize assumptions that support planning and task generation but do not belong in the business spec]
+
+   ## Open Questions
+
+   - [List unresolved questions, if any]
    ```
 
-   This allows @sdd-plan and @sdd-tasks to use the pre-analyzed insights without re-loading files.
+   This allows @sdd-plan and @sdd-tasks to use pre-analyzed reference input without overloading the business spec.
 
 4. Report completion with branch name, spec file path, reference folder used (if any), and readiness for the next phase.
 
@@ -226,6 +235,7 @@ Upon successful completion, display the following information:
 Branch Name: <BRANCH_NAME>
 Spec File: <SPEC_FILE>
 Reference: <folder_name> (if used, otherwise "None")
+Reference Context File: <REFERENCE_CONTEXT_FILE> (if created, otherwise "None")
 
 Next Steps:
 - Review the specification in the spec file
@@ -239,8 +249,9 @@ Next Steps:
 ✅ Feature specification created successfully
 
 Branch Name: feat/user-authentication-system
-Spec File: .specify/features/feat-user-authentication-system/spec.md
+Spec File: specs/feat-user-authentication-system/spec.md
 Reference: auth-patterns
+Reference Context File: specs/feat-user-authentication-system/reference-context.md
 
 Next Steps:
 - Review the specification in the spec file
@@ -252,98 +263,28 @@ Next Steps:
 
 ## Creating Reference Folders
 
-Reference folders provide reusable context that enhances @sdd-specify, @sdd-plan, and @sdd-tasks workflows.
+Reference folders provide reusable context that enhances `@sdd-specify`, `@sdd-plan`, and `@sdd-tasks` workflows.
 
-### How to Create a Reference Folder
+### Minimum Reference Folder Setup
 
-1. **Summarize folder name**: If the description is long, create a concise summary (80 characters or less) in kebab-case format.
+1. Create `.specify/reference/<folder_name>/`
+2. Add `README.md` with business-facing requirements, acceptance criteria, business rules, scope boundaries, user-visible states, and any reference-only technical notes that help planning
+3. Add extra files only when they provide signal the README cannot capture cleanly
 
-2. **Check if folder exists**: First check if `.specify/reference/<folder_name>/` already exists
-
-3. **Create folder structure**: If it doesn't exist, create the folder `.specify/reference/<folder_name>/`
-
-4. **Create README.md**: Create a `README.md` file in the new folder using the template below
-
-5. **Confirm creation**: Let the user know the reference folder has been created and they can now edit it
-
-### Template for README.md
-
-```markdown
-# [Feature Name] Requirements
-
-## Primary User Story
-
-As a [user type], I want [goal] so that [benefit].
-
-## Acceptance Criteria
-
-- [ ] Must have: [critical requirement]
-- [ ] Should have: [important requirement]
-- [ ] Could have: [nice-to-have requirement]
-
-## User Scenarios
-
-### Happy Path
-
-1. User does X
-2. System responds with Y
-3. User sees Z
-
-### Edge Cases
-
-- What happens when [edge case 1]
-- How to handle [edge case 2]
-- Behavior for [edge case 3]
-
-## Functional Requirements
-
-### Core Features
-
-- Feature 1: [description]
-- Feature 2: [description]
-
-### Business Rules
-
-- Rule 1: [constraint/validation]
-- Rule 2: [business logic]
-
-## Key Entities
-
-### Data Models
-
-- **Entity1**: fields, relationships, constraints
-- **Entity2**: fields, relationships, constraints
-
-### APIs/Interfaces
-
-- Endpoint patterns
-- Expected inputs/outputs
-- Error handling
-
-## Technical Constraints
-
-- Performance: [requirements]
-- Security: [requirements]
-- Compatibility: [requirements]
-
-## Success Metrics
-
-- How to measure success
-- Key performance indicators
-- User experience goals
-```
+Keep the shared authoring structure technology agnostic. If implementation-sensitive material is useful, keep it in clearly reference-only notes so it can inform planning without leaking into `spec.md`.
 
 ### Using Reference Folders
 
 After creating a reference folder:
 
-1. Edit the README.md with specific requirements for that domain/feature area
-2. Add additional files to the folder as needed
+1. Edit the README.md with the domain or feature requirements you want reused.
+2. Add extra files only when they capture additional design, validation, or integration signal.
 3. Use the folder when creating specifications:
-   - `@sdd-specify <description> -ref <folder_name>` - Creates spec with reference context
-   - The reference folder name is stored in the spec's markdown metadata
-   - `@sdd-plan` and `@sdd-tasks` automatically source the reference from the spec file
-   - No need to pass `-ref` to @sdd-plan or @sdd-tasks - they read it from the spec
+   - `@sdd-specify <description> -ref <folder_name>` creates `spec.md` plus `reference-context.md`
+   - `@sdd-plan` and `@sdd-tasks` automatically source `reference-context.md` from the feature folder
+   - No need to pass `-ref` after specification creation
+
+For fuller authoring examples, keep the detail in `README.md` or repo docs rather than expanding the core runtime command path.
 
 ### Important Notes
 

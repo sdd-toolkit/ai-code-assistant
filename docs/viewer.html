@@ -476,19 +476,19 @@ flowchart TD
     PostValidate -->|Invalid| ErrorBranch
     PostValidate -->|Valid| CheckRefLoad{Reference<br/>folder loaded?}
 
-    CheckRefLoad -->|Yes| AddMetadata[Add reference metadata<br/>to spec.yaml]
+    CheckRefLoad -->|Yes| PrepareRefContext[Prepare reference-context.md<br/>sidecar content]
     CheckRefLoad -->|No| LoadTemplate[Load spec-template.md]
 
-    AddMetadata --> LoadTemplate
+    PrepareRefContext --> LoadTemplate
 
-    LoadTemplate --> PopulateSpec[Populate specification:<br/>- Feature Overview<br/>- User Stories<br/>- Acceptance Criteria<br/>- Technical Constraints]
+    LoadTemplate --> PopulateSpec[Populate business specification:<br/>- Feature Overview<br/>- User Stories<br/>- Acceptance Criteria<br/>- Business Rules]
 
     PopulateSpec --> CheckRefContext{Reference<br/>context exists?}
 
-    CheckRefContext -->|Yes| AddRefSection[Add Reference Context section:<br/>- Architecture & Patterns<br/>- Code Examples<br/>- Configuration<br/>- Testing Approaches]
-    CheckRefContext -->|No| CreateSpec[Create spec.md in<br/>.specify/specs/feature-name/]
+    CheckRefContext -->|Yes| CreateRefContext[Create reference-context.md:<br/>- Business-Relevant Signals<br/>- Design & Interaction Signals<br/>- Technical Observations<br/>- Validation & Testing Signals]
+    CheckRefContext -->|No| CreateSpec[Create spec.md in<br/>specs/feature-name/]
 
-    AddRefSection --> CreateSpec
+    CreateRefContext --> CreateSpec
 
     CreateSpec --> Done[Complete: Feature directory created]
 
@@ -513,7 +513,7 @@ flowchart TD
         <div class="diagram-content">
           <pre class="mermaid">
 flowchart TD
-    Start([User: @sdd-plan feature-name]) --> CheckSpecs{Check .specify/specs/<br/>for features}
+  Start([User: @sdd-plan feature-name]) --> CheckSpecs{Check specs/<br/>for features}
 
     CheckSpecs -->|None found| ErrorNoSpec[ERROR: No specs found<br/>Run @sdd-specify first<br/>STOP]
     CheckSpecs -->|Multiple found| PromptSelect[Show available features<br/>Prompt user to specify]
@@ -524,9 +524,9 @@ flowchart TD
 
     LoadSpec --> LoadConstitution[Load Constitution sections:<br/>core, architecture, testing, branching]
 
-    LoadConstitution --> CheckRef{Reference context<br/>in spec metadata?}
+    LoadConstitution --> CheckRef{reference-context.md<br/>exists?}
 
-    CheckRef -->|Yes| LoadRefContext[Load reference context<br/>from spec metadata]
+    CheckRef -->|Yes| LoadRefContext[Load reference-context.md<br/>from feature directory]
     CheckRef -->|No| Phase1
 
     LoadRefContext --> Phase1[Phase 1: Research<br/>- Analyze requirements<br/>- Research technical decisions<br/>- Document trade-offs]
@@ -607,7 +607,7 @@ flowchart TD
 
   Phase5 --> FormatTasks[Format as checkboxes: T001 Task description; T002 P Parallel task; Include dependencies]
 
-  FormatTasks --> SaveTasks[Save tasks.md in .specify/specs/feature-name/]
+  FormatTasks --> SaveTasks[Save tasks.md in specs/feature-name/]
 
   SaveTasks --> Done([Complete: Tasks ready; Run @sdd-implement next])
 
@@ -755,9 +755,9 @@ flowchart TD
 
     CalcScore2 --> GenerateReport
 
-  GenerateReport --> CreateAuditReport[Create audit-report.md: Executive summary; Quality metrics; Compliance status; Issues by category; Recommendations; Action items]
+  GenerateReport --> CreateAuditReport[Create AUDIT.md: Executive summary; Quality metrics; Compliance status; Issues by category; Recommendations; Action items]
 
-    CreateAuditReport --> SaveReport[Save to feature directory:<br/>.specify/specs/feature-name/<br/>audit-report.md]
+    CreateAuditReport --> SaveReport[Save to feature directory:<br/>specs/feature-name/<br/>AUDIT.md]
 
   SaveReport --> ShowSummary[Display summary: Overall score; Critical issues count; Recommendations; Next actions]
 
@@ -831,7 +831,7 @@ flowchart TD
 
     GenerateReport[Generate drift report:<br/>- Header with date & score<br/>- Summary statistics<br/>- Section per principle<br/>- Detailed drift items<br/>- Action plan<br/>- Progress tracking]
 
-    GenerateReport --> SaveReport[Save to:<br/>.specify/specs/<br/>CONSTITUTION_DRIFT.md]
+    GenerateReport --> SaveReport[Save to:<br/>specs/<br/>CONSTITUTION_DRIFT.md]
 
     SaveReport --> ShowSummary[Display summary:<br/>- Total drift items by priority<br/>- Compliance percentage<br/>- Drift score<br/>- Next actions<br/>- Timeline suggestions]
 

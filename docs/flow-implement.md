@@ -5,7 +5,7 @@ flowchart TD
     Start([User: @sdd-implement or @sdd-implement feature-name]) --> CheckFeature{Feature name<br/>provided?}
 
     CheckFeature -->|Yes| UseProvided[Use specified feature]
-    CheckFeature -->|No| ListSpecs[List .specify/specs/ directories]
+    CheckFeature -->|No| ListSpecs[List specs/ directories]
 
     ListSpecs --> CountSpecs{How many<br/>specs found?}
 
@@ -42,7 +42,7 @@ flowchart TD
     CompleteSetup -->|No| IterateSetup
     CompleteSetup -->|Yes| StartPhase
 
-    PhaseTests --> IterateTests[For each Test task [P]:<br/>- Contract tests<br/>- Integration tests<br/>Can run parallel]
+    PhaseTests --> IterateTests[For each Test task [P]:<br/>- Contract or interface tests<br/>- Integration tests<br/>Can run parallel]
 
     IterateTests --> ExecuteTestTask[Load constitution:<br/>testing,branching<br/>Follow TDD standards]
 
@@ -59,9 +59,9 @@ flowchart TD
     CompleteTests -->|No| IterateTests
     CompleteTests -->|Yes| StartPhase
 
-    PhaseCore --> IterateCore[For each Core task:<br/>- Models<br/>- Services<br/>- Endpoints<br/>Respect file dependencies]
+    PhaseCore --> IterateCore[For each Core task:<br/>- Models or states<br/>- Workflows or services<br/>- Interfaces or contract behavior<br/>Respect file dependencies]
 
-    IterateCore --> DetectCoreType[Detect implementation type:<br/>service → core,architecture,observability<br/>model → core,architecture<br/>endpoint → core,architecture,security<br/>auth → core,security]
+    IterateCore --> DetectCoreType[Detect implementation type:<br/>workflow → core,architecture,observability<br/>model/state → core,architecture<br/>interface/contract → core,architecture,security<br/>validation/security → core,security]
 
     DetectCoreType --> LoadCoreConst[Load relevant constitution<br/>sections for file type]
 
@@ -82,9 +82,9 @@ flowchart TD
     CompleteCore -->|No| IterateCore
     CompleteCore -->|Yes| StartPhase
 
-    PhaseIntegration --> IterateIntegration[For each Integration task:<br/>- Database connections<br/>- Middleware<br/>- Logging<br/>- External services]
+    PhaseIntegration --> IterateIntegration[For each Integration task:<br/>- Cross-boundary integrations<br/>- Logging or observability<br/>- Accessibility or responsive behavior<br/>- External services]
 
-    IterateIntegration --> DetectIntegrationType[Detect type:<br/>database → core,architecture<br/>logging → observability<br/>security → core,security]
+    IterateIntegration --> DetectIntegrationType[Detect type:<br/>integration → core,architecture<br/>logging → observability<br/>cross-cutting quality → core,security]
 
     DetectIntegrationType --> LoadIntegrationConst[Load constitution sections]
 

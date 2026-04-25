@@ -21,19 +21,19 @@ flowchart TD
     PostValidate -->|Invalid| ErrorBranch
     PostValidate -->|Valid| CheckRefLoad{Reference<br/>folder loaded?}
 
-    CheckRefLoad -->|Yes| AddMetadata[Add reference metadata<br/>to spec.yaml]
+    CheckRefLoad -->|Yes| PrepareRefContext[Prepare reference-context.md<br/>sidecar content]
     CheckRefLoad -->|No| LoadTemplate[Load spec-template.md]
 
-    AddMetadata --> LoadTemplate
+    PrepareRefContext --> LoadTemplate
 
-    LoadTemplate --> PopulateSpec[Populate specification:<br/>- Feature Overview<br/>- User Stories<br/>- Acceptance Criteria<br/>- Technical Constraints]
+    LoadTemplate --> PopulateSpec[Populate business specification:<br/>- Feature Overview<br/>- User Stories<br/>- Acceptance Criteria<br/>- Business Rules]
 
     PopulateSpec --> CheckRefContext{Reference<br/>context exists?}
 
-    CheckRefContext -->|Yes| AddRefSection[Add Reference Context section:<br/>- Architecture & Patterns<br/>- Code Examples<br/>- Configuration<br/>- Testing Approaches]
-    CheckRefContext -->|No| CreateSpec[Create spec.md in<br/>.specify/specs/feature-name/]
+    CheckRefContext -->|Yes| CreateRefContext[Create reference-context.md:<br/>- Business-Relevant Signals<br/>- Design & Interaction Signals<br/>- Technical Observations<br/>- Validation & Testing Signals]
+    CheckRefContext -->|No| CreateSpec[Create spec.md in<br/>specs/feature-name/]
 
-    AddRefSection --> CreateSpec
+    CreateRefContext --> CreateSpec
 
     CreateSpec --> Done([Complete: Spec created<br/>Branch: Manual if desired<br/>Ready for @sdd-plan])
 
@@ -49,7 +49,7 @@ flowchart TD
 1. **Reference Folder**: Optional context for enhanced specifications using `-ref <folder-name>`
 2. **Branch Validation**: Critical checkpoint - must comply with standards
 3. **Post-Script Validation**: Ensures generated branch name still complies
-4. **Reference Context**: Stored in spec for reuse by @sdd-plan and @sdd-tasks
+4. **Reference Context**: Stored in `reference-context.md` for reuse by @sdd-plan and @sdd-tasks
 
 ## Command Usage
 
@@ -63,7 +63,8 @@ flowchart TD
 
 ## Output Files
 
-- `.specify/specs/feature-name/spec.md` - Feature specification
+- `specs/feature-name/spec.md` - Feature specification
+- `specs/feature-name/reference-context.md` - Supplemental context from reference inputs (optional)
 - Directory name follows branch naming convention: `type/feature-description`
 
 **Note**: Create your git branch manually if desired:

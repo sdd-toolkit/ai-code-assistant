@@ -9,14 +9,15 @@ Execute the implementation plan by processing and executing all tasks defined in
 
 2. Load and analyze the implementation context:
    - **REQUIRED**: Read tasks.md for the complete task list and execution plan
-   - **REQUIRED**: Read plan.md for tech stack, architecture, and file structure
-   - **IF EXISTS**: Read data-model.md for entities and relationships
-   - **IF EXISTS**: Read contracts/ for API specifications and test requirements
+   - **REQUIRED**: Read plan.md for selected touched areas, implementation shape, verification strategy, repo constraints, and prohibited behaviors
+   - **IF EXISTS**: Read data-model.md for entities, stateful concepts, or schemas when the task plan requires them
+   - **IF EXISTS**: Read contracts/ for justified contract or interface artifacts and their externally observable obligations
    - **IF EXISTS**: Read research.md for technical decisions and constraints
-   - **IF EXISTS**: Read quickstart.md for integration scenarios
+   - **IF EXISTS**: Read quickstart.md for manual validation scenarios and observable outcomes
+   - **IF EXISTS**: Read reference-context.md for supplemental design, interaction, accessibility, and validation signals that affect implementation or verification
 
 3. Parse tasks.md structure and extract:
-   - **Task phases**: Setup, Tests, Core, Integration, Polish
+   - **Task phases**: Setup, Verification, Implementation, Integration, Polish
    - **Task dependencies**: Sequential vs parallel execution rules
    - **Task details**: ID, description, file paths, parallel markers [P]
    - **Execution flow**: Order and dependency requirements
@@ -24,16 +25,19 @@ Execute the implementation plan by processing and executing all tasks defined in
 4. Execute implementation following the task plan:
    - **Phase-by-phase execution**: Complete each phase before moving to the next
    - **Respect dependencies**: Run sequential tasks in order, parallel tasks [P] can run together
-   - **Follow TDD approach**: Execute test tasks before their corresponding implementation tasks
+   - **Follow the plan-selected verification strategy**: Execute verification tasks before dependent implementation tasks when the repo and task plan support that order
    - **File-based coordination**: Tasks affecting the same files must run sequentially
    - **Validation checkpoints**: Verify each phase completion before proceeding
+   - **Artifact-driven execution**: Treat `contracts/` as an optional generic artifact location when present; do not assume API endpoints are the default contract shape
+   - **Repo-driven execution**: Follow the chosen task descriptions and touched files; do not invent model/service/endpoint/database layers that the plan does not justify
+   - **Constitution application**: Apply constitution sections according to task shape such as verification, security-sensitive behavior, user-interface work, interfaces, workflows, state management, observability, or operations
 
 5. Implementation execution rules:
-   - **Setup first**: Initialize project structure, dependencies, configuration
-   - **Tests before code**: If you need to write tests for contracts, entities, and integration scenarios
-   - **Core development**: Implement models, services, CLI commands, endpoints
-   - **Integration work**: Database connections, middleware, logging, external services
-   - **Polish and validation**: Unit tests, performance optimization, documentation
+   - **Setup first**: Initialize or adjust only the prerequisites, dependencies, and configuration that the task plan requires
+   - **Verification before implementation**: When the task plan and repo support it, create or run the relevant verification before changing dependent implementation files
+   - **Implementation work**: Implement workflows, interfaces, states, transformations, validations, and user-visible surfaces described by the task plan
+   - **Integration work**: Connect cross-boundary behavior, observability, accessibility, responsive behavior, or external systems only when the task plan requires them
+   - **Polish and validation**: Run supported automated checks, execute manual quickstart scenarios when needed, and update justified documentation
 
 6. Progress tracking and error handling:
    - Report progress after each completed task

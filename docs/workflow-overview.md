@@ -10,18 +10,18 @@ flowchart TB
         S3[Validate branching standards]
         S4[Create feature directory]
         S5[Generate spec.md]
-        S6[Store reference context if provided]
+        S6[Generate reference-context.md if provided]
 
         S1 --> S2 --> S3 --> S4 --> S5 --> S6
     end
 
     subgraph Plan["@sdd-plan - Design Implementation"]
         P1[Auto-detect or specify feature]
-        P2[Load spec.md + reference context]
+        P2[Load spec.md + optional reference-context.md]
         P3[Load constitutional standards<br/>core,architecture,testing,branching]
         P4[Phase 0: Technical Research]
         P5[Phase 1: Design Artifacts<br/>data-model, contracts, quickstart]
-        P6[Phase 2: Task Preview]
+        P6[Phase 2: Task Planning Approach]
         P7[Generate plan.md]
 
         P1 --> P2 --> P3 --> P4 --> P5 --> P6 --> P7
@@ -29,7 +29,7 @@ flowchart TB
 
     subgraph Tasks["@sdd-tasks - Generate Task List"]
         T1[Auto-detect or specify feature]
-        T2[Load plan.md + artifacts]
+        T2[Load plan.md + artifacts + optional reference-context.md]
         T3[Detect task types needed]
         T4[Load relevant constitution sections]
         T5[Generate Setup tasks]
@@ -78,7 +78,7 @@ flowchart TB
         A3[Phase 1: Critical Standards Audit<br/>core, testing, security, branching]
         A4[Phase 2: Conditional Deep Dive<br/>architecture, observability, operations]
         A5[Calculate quality scores]
-        A6[Generate audit-report.md]
+        A6[Generate AUDIT.md]
 
         A1 --> A2 --> A3 --> A4 --> A5 --> A6
     end
@@ -104,18 +104,19 @@ flowchart TB
 ### 1. @sdd-specify - Create Specification
 
 **Input**: Natural language feature description  
-**Output**: `spec.md` with structured requirements  
+**Output**: `spec.md` with structured requirements and optional `reference-context.md`  
 **Key Features**:
 
 - Validates against branching standards
 - Creates feature directory with branch-compatible naming
 - Git branch management is manual
 - Optional reference context for enhanced specs
-- Stores reference metadata for downstream use
+- Keeps business requirements in `spec.md` and supplementary context in `reference-context.md`
 
 **Files Created**:
 
-- `.specify/specs/feature-name/spec.md`
+- `specs/feature-name/spec.md`
+- `specs/feature-name/reference-context.md` (optional)
 
 ---
 
@@ -125,18 +126,19 @@ flowchart TB
 **Output**: Complete implementation plan with design artifacts  
 **Key Features**:
 
-- Loads reference context from spec automatically
+- Loads optional `reference-context.md` from the feature folder
 - Phase-based execution with gate checks
 - Generates technical research and design docs
-- Creates API contracts and test scenarios
+- Creates contracts/interfaces and test scenarios
+- Records the task-generation approach, but leaves `tasks.md` creation to `@sdd-tasks`
 
 **Files Created**:
 
-- `.specify/specs/feature-name/plan.md`
-- `.specify/specs/feature-name/research.md`
-- `.specify/specs/feature-name/data-model.md`
-- `.specify/specs/feature-name/contracts/`
-- `.specify/specs/feature-name/quickstart.md`
+- `specs/feature-name/plan.md`
+- `specs/feature-name/research.md`
+- `specs/feature-name/data-model.md`
+- `specs/feature-name/contracts/`
+- `specs/feature-name/quickstart.md`
 
 ---
 
@@ -153,14 +155,14 @@ flowchart TB
 
 **Files Created**:
 
-- `.specify/specs/feature-name/tasks.md`
+- `specs/feature-name/tasks.md`
 
 **Task Phases**:
 
 1. **Setup** - Project initialization
 2. **Tests [P]** - Contract & integration tests (parallel)
-3. **Core** - Models, services, endpoints
-4. **Integration** - Database, middleware, logging
+3. **Core** - Models, workflows, interfaces
+4. **Integration** - Cross-boundary and cross-cutting behavior
 5. **Polish [P]** - Unit tests, performance, docs (parallel)
 
 ---
@@ -206,7 +208,7 @@ flowchart TB
 
 **Files Created**:
 
-- `.specify/specs/feature-name/audit-report.md`
+- `specs/feature-name/AUDIT.md`
 
 ---
 
@@ -214,9 +216,9 @@ flowchart TB
 
 ### Reference Context Flow
 
-1. **@sdd-specify**: Load reference folder once, store in spec.md
-2. **@sdd-plan**: Read reference context from spec.md metadata
-3. **@sdd-tasks**: Read reference context from spec.md metadata
+1. **@sdd-specify**: Load reference folder once, write business requirements to `spec.md` and supplementary signals to `reference-context.md`
+2. **@sdd-plan**: Read `reference-context.md` from the feature folder when present
+3. **@sdd-tasks**: Read `reference-context.md` from the feature folder when present
 4. **Benefit**: Reference files loaded once, reused 3x (67% reduction)
 
 ### Constitutional Loading Strategy
@@ -236,8 +238,8 @@ flowchart TB
 
 Tests are generated and executed before their corresponding implementation:
 
-1. Contract tests → Then endpoints
-2. Integration tests → Then services
+1. Contract or interface tests → Then implementations
+2. Integration tests → Then workflows
 3. Unit tests → Then utilities
 
 ---

@@ -42,9 +42,9 @@ flowchart TD
 
     CalcScore2 --> GenerateReport
 
-    GenerateReport --> CreateAuditReport[Create audit-report.md:<br/>- Executive summary<br/>- Quality metrics<br/>- Compliance status<br/>- Issues by category<br/>- Recommendations<br/>- Action items]
+    GenerateReport --> CreateAuditReport[Create AUDIT.md:<br/>- Executive summary<br/>- Quality metrics<br/>- Compliance status<br/>- Issues by category<br/>- Recommendations<br/>- Action items]
 
-    CreateAuditReport --> SaveReport[Save to feature directory:<br/>.specify/specs/feature-name/<br/>audit-report.md]
+    CreateAuditReport --> SaveReport[Save to feature directory:<br/>specs/feature-name/<br/>AUDIT.md]
 
     SaveReport --> ShowSummary[Display summary:<br/>- Overall score<br/>- Critical issues count<br/>- Recommendations<br/>- Next actions]
 
@@ -80,7 +80,7 @@ flowchart TD
 **Purpose**: Determine if reference patterns and standards should be loaded  
 **Decision Logic**:
 
-- If spec.md contains reference metadata → Load reference context
+- If `reference-context.md` exists in the feature directory → Load reference context
 - Otherwise → Skip to Phase 1 constitutional loading
 
 **Why Important**: Reference context provides domain-specific patterns to audit against.
@@ -130,14 +130,12 @@ flowchart TD
 **Conditional Sections**:
 
 - 🏗️ **Architecture** - If architectural violations found
-
   - Design patterns
   - Module structure
   - Separation of concerns
   - API contracts
 
 - 📊 **Observability** - If logging/monitoring issues found
-
   - Structured logging
   - Metrics collection
   - Trace correlation
@@ -155,7 +153,7 @@ flowchart TD
 
 ## Audit Report Structure
 
-The generated `audit-report.md` includes:
+The generated `AUDIT.md` includes:
 
 ### 1. Executive Summary
 
@@ -207,7 +205,7 @@ Prioritized TODO list:
 ### Primary Output
 
 ```
-.specify/specs/<feature-name>/audit-report.md
+specs/<feature-name>/AUDIT.md
 ```
 
 **Contains**: Complete audit results with metrics, issues, and recommendations
@@ -230,7 +228,7 @@ git push origin feature/branch-name
 
 ```bash
 # Review audit report
-cat .specify/specs/<feature-name>/audit-report.md
+cat specs/<feature-name>/AUDIT.md
 
 # Fix critical issues first
 # Re-run audit to verify fixes
