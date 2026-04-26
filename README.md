@@ -270,13 +270,15 @@ The toolkit uses an optimized reference context system that **loads once and reu
 
 1. **During `@sdd-specify <description> -ref <folder>`**:
    - Loads all files from `.specify/reference/<folder>/`
+   - Treats all validated files in the folder as authoritative inputs; `README.md`, if present, is an organizer and does not outrank sibling artifacts
    - Extracts and categorizes insights:
      - Business-Relevant Signals
      - Design & Interaction Signals
+       - Visual System / Style Tokens
      - Technical Observations
      - Validation & Testing Signals
-   - Writes business-facing requirements to `spec.md`
-   - Writes supplementary context to `reference-context.md`
+   - Writes business-facing requirements to `spec.md` without leaking tech stack, framework, API, code-structure, or CSS implementation detail
+   - Writes supplementary context, including preserved visual-system detail, to `reference-context.md`
 
 2. **During `@sdd-plan` and `@sdd-tasks`**:
    - Reads `reference-context.md` from the feature folder when present
@@ -287,7 +289,7 @@ The toolkit uses an optimized reference context system that **loads once and reu
 
 - **Performance**: Files loaded once instead of 3 times (67% reduction)
 - **Consistency**: Single source of truth across all stages
-- **Transparency**: Business requirements stay in `spec.md`, supplementary context stays in `reference-context.md`
+- **Transparency**: Business requirements stay in `spec.md`, while supplementary design, visual-system, and technical context stays in `reference-context.md`
 - **Efficiency**: Reduced token usage and faster execution
 
 ## Maintainer Sync Checklist
@@ -300,6 +302,7 @@ Use this checklist whenever prompt or template behavior changes:
 - Update each pair together: `.specify/templates/commands/sdd-implement.md` and `prompts/sdd-implement.md`
 - Confirm usage, arguments, output examples, and path examples match the current `specs/<feature>/...` model
 - Confirm business-only `spec.md` behavior and `reference-context.md` behavior match across command templates and runtime prompts
+- Confirm validated reference artifacts are treated as top-priority inputs and that `README.md` is documented only as an optional organizer
 - Confirm plan and task generation rules stay behaviorally aligned after edits
 - Confirm shared prompts and templates stay technology agnostic before repo analysis; stack-specific detail belongs in instantiated constitutions and generated repo-grounded artifacts, not in shared scaffolding
 - Confirm `contracts/` is described as optional and generic across plan, tasks, and implement surfaces rather than as an API-only default
@@ -329,7 +332,7 @@ Create structured requirement folders to enhance your workflow:
 # Create folder structure
 mkdir -p .specify/reference/your-domain-name
 
-# Create README.md with requirements
+# Optional: create README.md when a prose overview helps organize the artifacts
 cat > .specify/reference/your-domain-name/README.md << 'EOF'
 # Your Domain Requirements
 
@@ -349,9 +352,22 @@ As a [user], I want [goal] so that [benefit].
 - Rule 2: [business logic]
 EOF
 
+# Add other authoritative reference artifacts when they carry real design or workflow signal
+cat > .specify/reference/your-domain-name/formCSS.md << 'EOF'
+# Spacing, typography, sizing, border, and color tokens
+EOF
+
+cat > .specify/reference/your-domain-name/stories.md << 'EOF'
+# User-visible scenarios and validation behavior
+EOF
+
 # Use in workflow
 @sdd-specify your feature description -ref your-domain-name
 ```
+
+All validated files inside the folder are authoritative when the folder is used. `README.md` is optional and does not outrank sibling artifacts.
+
+See [docs/reference-folder-example.md](docs/reference-folder-example.md) for a mixed-artifact example showing how business behavior stays in `spec.md` and design-token detail moves to `reference-context.md`, planning, and tasks.
 
 ## Available Prompts
 

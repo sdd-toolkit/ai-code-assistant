@@ -98,19 +98,26 @@ The user will provide a feature description (first text after the command), opti
 
 1.5. **Load Reference Folder (if provided)**: If the user specified a reference folder with `-ref <folder_name>`, check for `.specify/reference/<folder_name>/` and load all files in the folder. Extract and summarize:
 
+- Treat all validated files in the folder as top-priority inputs.
+- A `README.md`, if present, is an organizing aid only and does not outrank sibling reference artifacts.
+- If a validated reference artifact conflicts with a generic prompt default, the validated reference artifact wins.
+- If validated reference artifacts conflict with each other, surface that conflict in `Open Questions` instead of silently choosing one.
+- **MANDATORY OUTPUT**: When `-ref` is provided, `reference-context.md` MUST be created in the feature directory. If it is not created, STOP and return an error instead of reporting success.
 - **Business-Relevant Signals**: User goals, workflows, validation expectations, visible states, and constraints that belong in the business spec
 - **Design & Interaction Signals**: Screen or view inventory, interaction states, loading or empty or error states, accessibility cues, and responsive cues
+- **Visual System / Style Tokens**: Authoritative spacing, typography, sizing, density, border, color, contrast, iconography, and layout-token signals that **must be preserved verbatim and must never be lost**; they belong in `reference-context.md`, not in the business spec — do not summarise, soften, or omit any value
 - **Terminal Behavior & Scope Guards**: Prototype-only endings, explicit non-goals, forbidden assumptions, prohibited behaviors, and exact user-facing copy when the source clearly specifies it
 - **Technical Observations**: Implementation-sensitive patterns, component or structure hints, configuration notes, or integration notes
 - **Validation & Testing Signals**: Testing patterns, fixtures, utilities, or verification notes
 - **Implementation-Sensitive Assumptions**: Assumptions that help planning or task generation but do not belong in the business spec
 
-Store this as REFERENCE_CONTEXT for writing to a separate reference context artifact. Only business-facing signals may be incorporated into the spec itself.
+Store this as REFERENCE_CONTEXT for writing to a separate reference context artifact. Only business-facing signals may be incorporated into the spec itself; never copy tech stack, framework choices, APIs, code structure, CSS declarations, class names, or file paths into `spec.md`.
 
 2. Load `.specify/templates/spec-template.md` to understand required sections.
 
 3. Write the specification to SPEC_FILE using the template structure, replacing placeholders with concrete details derived from the feature description and reference folder (if provided) while preserving section order and headings.
    - Promote each distinct observable success, invalid, empty, error, or terminal scenario into its own acceptance criterion when the prompt or validated reference clearly supports it.
+   - Even when validated reference artifacts are top-priority, keep `spec.md` business-only. Translate visual and design inputs into user-visible behavior, accessibility outcomes, copy, scope boundaries, and responsive expectations only.
    - Do not infer behaviors that are not explicitly requested or validated by the reference material, such as normalization rules, persistence, retries, background side effects, or extra navigation.
    - Update the Review & Acceptance Checklist and Execution Status so they truthfully reflect the actual completeness of the generated document.
 
@@ -144,6 +151,10 @@ Store this as REFERENCE_CONTEXT for writing to a separate reference context arti
 
    [Summarize screen or view inventory, interaction states, loading or empty or error states, accessibility cues, and responsive cues]
 
+   ## Visual System / Style Tokens
+
+   [Preserve verbatim every authoritative spacing, typography, sizing, density, border, color, contrast, iconography, and layout-token value from the reference files. These values are first-class and must never be lost, compressed, softened, or omitted. Do not summarise or generalise — record exact values as found in the reference.]
+
    ## Terminal Behavior & Scope Guards
 
    [Summarize explicit non-goals, forbidden assumptions, prohibited behaviors, prototype-only endings, and exact user-facing copy that should be preserved]
@@ -167,6 +178,11 @@ Store this as REFERENCE_CONTEXT for writing to a separate reference context arti
 
    This allows @sdd-plan and @sdd-tasks to use pre-analyzed reference input without overloading the business spec.
 
+   f) Before completion, validate all boundary conditions:
+   - `spec.md` remains business-only and does not include a `Reference Context` section.
+   - `spec.md` contains no implementation detail (tech stack, framework choices, APIs, code structure, CSS declarations, class names, or file paths).
+   - `reference-context.md` exists and contains the loaded reference-file inventory plus preserved visual-system/style-token values.
+
 4. Report completion with branch name, spec file path, reference folder used (if any), `reference-context.md` path (if created), and readiness for the next phase.
 
 Note: The script creates the feature directory and initializes the spec file.
@@ -180,8 +196,9 @@ Reference folders provide reusable context that enhances `@sdd-specify`, `@sdd-p
 ### Minimum Reference Folder Setup
 
 1. Create `.specify/reference/<folder_name>/`
-2. Add `README.md` with business-facing requirements, acceptance criteria, business rules, scope boundaries, user-visible states, and any reference-only technical notes that help planning
-3. Add extra files only when they provide signal the README cannot capture cleanly
+2. Add validated reference artifacts that carry authoritative behavior, design, copy, workflow, or verification signal
+3. Optionally add `README.md` when a prose overview helps organize multiple artifacts or clarify how they relate
+4. Keep filenames and file contents clear enough that each artifact can stand on its own if `README.md` is absent
 
 Keep the shared authoring structure technology agnostic. If implementation-sensitive material is useful, keep it in clearly reference-only notes so it can inform planning without leaking into `spec.md`.
 
@@ -189,14 +206,14 @@ Keep the shared authoring structure technology agnostic. If implementation-sensi
 
 After creating a reference folder:
 
-1. Edit the README.md with the domain or feature requirements you want reused.
-2. Add extra files only when they capture additional design, validation, or integration signal.
+1. Add or update any validated files that carry the feature behavior, design, copy, or workflow signal you want reused.
+2. Add `README.md` only when it helps explain or organize those artifacts; it does not outrank sibling files.
 3. Use the folder when creating specifications:
    - `@sdd-specify <feature_description> -ref <folder_name>` creates `spec.md` plus `reference-context.md`
    - `@sdd-plan` and `@sdd-tasks` automatically source `reference-context.md` from the feature folder
    - No need to pass `-ref` after specification creation
 
-For fuller authoring examples, keep the detail in `README.md` or repo docs rather than expanding the core runtime command path.
+For fuller authoring examples, keep the detail in the validated reference artifacts themselves or repo docs rather than expanding the core runtime command path.
 
 ### Output Format
 
@@ -220,5 +237,6 @@ Next Steps:
 
 - Only create the folder if it doesn't already exist
 - The folder name should be descriptive and kebab-case (e.g., `user-authentication`, `payment-system`)
-- The README.md serves as the primary reference document but additional files can be added
+- All validated files in the folder are authoritative inputs when the folder is used
+- `README.md`, if present, is a helpful organizing document but not the sole or highest-priority source
 - Reference folders provide consistent context: define once in @sdd-specify, automatically used by @sdd-plan and @sdd-tasks

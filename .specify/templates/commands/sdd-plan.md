@@ -13,11 +13,16 @@ Execute the implementation planning workflow using the plan template to generate
    - Success criteria and acceptance criteria
    - Business constraints and dependencies described in the spec
    - **Check for `reference-context.md` in the feature directory**:
-     - If present: Use its design, interaction, technical, and validation signals as supplemental planning input
+     - If present: Use its design, visual-system, interaction, technical, and validation signals as top-priority supplemental planning input
      - Keep `spec.md` as the business-only source of user intent and requirements
-       - Use constitution memory as the source of technical standards, verification guidance, and stack-specific constraints
+     - Treat preserved visual-system and style-token signals as explicit planning obligations when present
+     - Use constitution memory as the source of technical standards, verification guidance, and stack-specific constraints
    - Perform an explicit repo-structure and tooling check before making artifact decisions
    - Derive all repo paths, commands, tooling claims, and touched areas from the current repository state and script-returned paths only
+
+2.1. **Enforce Reference Context Completeness**:
+
+- If `spec.md` indicates reference-derived input (for example reference metadata or reference-context-style analysis cues) but `reference-context.md` is missing in the feature directory: STOP and return an error instead of continuing planning.
 
 3. **Load Constitutional Standards**: Execute `.specify/scripts/bash/load-constitution.sh` to auto-load all constitution sections:
 
@@ -55,7 +60,8 @@ Execute the implementation planning workflow using the plan template to generate
        - Phase 1 generates data-model.md and quickstart.md, plus only the smallest justified artifacts under `contracts/` when a structured contract artifact is actually needed
        - Phase 2 describes the task-generation approach (does not create tasks.md)
    - If `reference-context.md` exists, use it to enrich research, design, and quickstart outputs without changing the normal flow for features that do not have design references
-   - Ensure reference-context-driven user-visible states, validation cues, accessibility expectations, and terminal behaviors appear in `quickstart.md` and task-planning guidance when relevant
+   - Preserve validated visual-system and style-token signals from `reference-context.md` as explicit, named design obligations and manual visual-verification cues; every specific value must appear by name in planning artifacts — including positional and sizing values (for example width, height, min/max constraints, padding, gap, alignment, order, and offsets). Do not reduce reference values to vague layout summaries or generic descriptions, and do not lose any value
+   - Ensure reference-context-driven user-visible states, validation cues, accessibility expectations, responsive expectations, visual-system obligations, and terminal behaviors appear in `quickstart.md` and task-planning guidance when relevant
    - Keep repo-structure and gap detection prompt-driven in this first pass; do not require helper-script metadata beyond the current returned paths
    - Incorporate user-provided details from arguments into Technical Context
    - Maintain a lightweight Coverage Block in `plan.md` mapping `AC-*`, `FR-*`, and `EC-*` items to design and verification outputs

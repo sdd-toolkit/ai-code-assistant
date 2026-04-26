@@ -14,15 +14,19 @@ Generate an actionable, dependency-ordered tasks.md for the feature based on ava
    - IF EXISTS: Read contracts/ for externally observable obligations when the plan justifies them
    - IF EXISTS: Read research.md for technical decisions
    - IF EXISTS: Read quickstart.md for test scenarios
-   - IF EXISTS: Read reference-context.md for supplemental design, interaction, technical, and validation signals
+   - IF EXISTS: Read reference-context.md for supplemental design, visual-system, interaction, technical, and validation signals
      - Add tasks for loading, empty, error, and validation states when required
      - Add accessibility and responsiveness tasks when required
+     - Add explicit styling and manual visual-verification tasks when preserved visual-system or style-token obligations are present
      - Keep non-reference-driven features on the existing task generation path
 
-   Note: Not all projects have all documents. For example:
-   - CLI tools might not have contracts/
-   - Simple libraries might not need data-model.md
-   - Generate tasks based on what's available
+2.1. **Enforce Reference Context Completeness**: - If `spec.md` indicates reference-derived input (for example reference metadata or reference-context-style analysis cues) but `reference-context.md` is missing in the feature directory: STOP and return an error instead of continuing task generation.
+
+Note: Not all projects have all documents. For example:
+
+- CLI tools might not have contracts/
+- Simple libraries might not need data-model.md
+- Generate tasks based on what's available
 
 3. Generate tasks following the template:
    - Use `.specify/templates/tasks-template.md` as the base
@@ -31,7 +35,7 @@ Generate an actionable, dependency-ordered tasks.md for the feature based on ava
      - **Verification tasks [P]**: Constitution-supported automated checks or explicit manual validation steps
      - **Implementation tasks**: Workflows, rules, interfaces, states, and constraint-preservation work
      - **Integration tasks**: Cross-boundary or cross-cutting behavior only when required by the plan
-     - **Design-driven tasks**: State handling, accessibility, responsiveness, and terminal behavior when `reference-context.md` requires them
+     - **Design-driven tasks**: State handling, accessibility, responsiveness, preserved visual-system styling, and terminal behavior when `reference-context.md` requires them
      - **Polish tasks [P]**: Final verification, docs, and justified follow-up checks
    - Tasks must be executable changes or concrete verification runs; do not emit read-only review, analysis, or "lock requirements" tasks as substitutes for work
 
@@ -40,8 +44,9 @@ Generate an actionable, dependency-ordered tasks.md for the feature based on ava
    - Use constitution-aware verification guidance; do not generate unsupported automated suites
    - If project standards allow only unit tests, do not generate contract, integration, or e2e suites
    - If no backend/API exists, do not generate endpoint, middleware, repository, or DB tasks
-   - If the feature is UI-only, favor component, styling, validation, accessibility, and manual-scenario tasks
-   - If `reference-context.md` identifies user-visible states or validation behavior, add implementation and verification tasks for them
+   - If the feature is UI-only, favor component, styling, validation, accessibility, visual-system, and manual-scenario tasks
+   - If `reference-context.md` identifies user-visible states, validation behavior, visual-system obligations, or source-supported rules about how entered values are treated, add implementation and verification tasks for them
+   - If `reference-context.md` preserves visual-system or style-token requirements, add at least one explicit implementation task and one manual visual-verification task for them; each task must name the specific values from the reference that must be applied or confirmed, including positional and sizing values (for example width, height, min/max constraints, padding, gap, alignment, order, and offsets) — reducing obligations to generic language such as "style the form" or "add responsive behavior" is a defect
    - If the spec or plan says the feature must NOT do something, add explicit constraint-preservation tasks
    - Source tags may contain only requirement IDs from the spec or Coverage Block (`AC-*`, `FR-*`, `EC-*`); mention quickstart scenario IDs, research decisions, or contract names only in task descriptions
    - If automated verification requires tooling the repo does not yet have, create setup tasks first or keep verification manual; do not generate test-first tasks against a nonexistent harness

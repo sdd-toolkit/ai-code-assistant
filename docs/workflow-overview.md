@@ -111,7 +111,8 @@ flowchart TB
 - Creates feature directory with branch-compatible naming
 - Git branch management is manual
 - Optional reference context for enhanced specs
-- Keeps business requirements in `spec.md` and supplementary context in `reference-context.md`
+- Treats all validated files in the reference folder as top-priority inputs when `-ref` is used
+- Keeps business requirements in `spec.md` and supplementary design, visual-system, and technical context in `reference-context.md`
 
 **Files Created**:
 
@@ -129,6 +130,7 @@ flowchart TB
 - Loads optional `reference-context.md` from the feature folder
 - Phase-based execution with gate checks
 - Generates technical research and design docs
+- Preserves visual-system and style-token obligations from `reference-context.md` as explicit planning input when present
 - Creates contracts/interfaces and test scenarios
 - Records the task-generation approach, but leaves `tasks.md` creation to `@sdd-tasks`
 
@@ -151,6 +153,7 @@ flowchart TB
 - Context-aware constitutional loading
 - Parallel task detection [P]
 - TDD approach (tests before implementation)
+- Converts preserved visual-system obligations into explicit styling and manual visual-verification tasks when present
 - Dependency ordering across phases
 
 **Files Created**:
@@ -216,7 +219,7 @@ flowchart TB
 
 ### Reference Context Flow
 
-1. **@sdd-specify**: Load reference folder once, write business requirements to `spec.md` and supplementary signals to `reference-context.md`
+1. **@sdd-specify**: Load validated reference artifacts once as authoritative inputs, write business requirements to `spec.md`, and write supplementary design, visual-system, and technical signals to `reference-context.md`
 2. **@sdd-plan**: Read `reference-context.md` from the feature folder when present
 3. **@sdd-tasks**: Read `reference-context.md` from the feature folder when present
 4. **Benefit**: Reference files loaded once, reused 3x (67% reduction)

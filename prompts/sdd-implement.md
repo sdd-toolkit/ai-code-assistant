@@ -43,7 +43,7 @@ The user **MUST** provide a feature name. This parameter is compulsory.
    - **IF EXISTS**: Read contracts/ for justified contract or interface artifacts and their externally observable obligations
    - **IF EXISTS**: Read research.md for technical decisions and constraints
    - **IF EXISTS**: Read quickstart.md for manual validation scenarios and observable outcomes
-   - **IF EXISTS**: Read reference-context.md for supplemental design, interaction, accessibility, and validation signals that affect implementation or verification
+   - **IF EXISTS**: Read reference-context.md for supplemental design, visual-system, interaction, accessibility, and validation signals that affect implementation or verification
 
 4. **Load Constitutional Standards (Task-Shaped Application)**: Analyze the current task and apply the relevant sections without assuming a default backend architecture.
 
@@ -100,8 +100,8 @@ The user **MUST** provide a feature name. This parameter is compulsory.
 7. Implementation execution rules:
    - **Setup first**: Initialize or adjust only the prerequisites, dependencies, and configuration that the task plan requires
    - **Verification before implementation**: When the task plan and repo support it, create or run the relevant verification before changing dependent implementation files
-   - **Implementation work**: Implement workflows, interfaces, states, transformations, validations, and user-visible surfaces described by the task plan
-   - **Integration work**: Connect cross-boundary behavior, observability, accessibility, responsive behavior, or external systems only when the task plan requires them
+   - **Implementation work**: Implement workflows, interfaces, states, transformations, validations, user-visible surfaces, and preserved visual-system obligations described by the task plan
+   - **Integration work**: Connect cross-boundary behavior, observability, accessibility, responsive behavior, preserved visual-system styling, or external systems only when the task plan requires them
    - **Polish and validation**: Run supported automated checks, execute manual quickstart scenarios when needed, and update justified documentation
 
 8. Progress tracking and error handling:

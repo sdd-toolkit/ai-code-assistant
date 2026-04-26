@@ -19,14 +19,14 @@ MIT License
    → contracts/: Extract externally observable obligations when justified by the plan
    → research.md: Extract decisions and missing prerequisites → setup or implementation tasks
    → quickstart.md: Extract manual validation flows and observable outcomes
-   → reference-context.md: Extract design and interaction signals → state and accessibility tasks when needed
+   → reference-context.md: Extract design, interaction, and visual-system signals → state, accessibility, styling, and manual visual-verification tasks when needed
    → plan.md Coverage Block: Extract `AC-*`, `FR-*`, and `EC-*` coverage obligations
 3. Generate tasks by category:
    → Setup: repo gaps, missing prerequisites, required tooling or config
    → Verification: constitution-supported automated checks and explicit manual validation when automation is not justified
    → Implementation: workflows, interfaces, state handling, validation, and business-rule behavior
    → Integration: cross-boundary or cross-cutting changes only when the plan requires them
-   → Design-driven: loading, empty, error, validation, accessibility, responsiveness, and terminal behaviors when required
+   → Design-driven: loading, empty, error, validation, accessibility, responsiveness, preserved visual-system styling, and terminal behaviors when required
    → Polish: documentation, cleanup, and final validation
 4. Apply task rules:
    → Different files = mark [P] for parallel
@@ -85,7 +85,7 @@ Verification tasks must be executable: create or update a supported verification
 
 - [ ] T011 [FR-001] Connect [integration-or-dependency] in [source-file] (if applicable)
 - [ ] T012 [FR-001] Implement required cross-boundary, observability, or audit behavior in [source-file] (if applicable)
-- [ ] T013 [AC-001] Implement accessibility, responsiveness, or terminal-behavior handling for [surface] in [source-file] (if applicable)
+- [ ] T013 [AC-001] Implement accessibility, responsiveness, preserved visual-system styling, or terminal-behavior handling for [surface] in [source-file] (if applicable)
 
 ## Phase 3.5: Polish
 
@@ -99,6 +99,7 @@ Verification tasks must be executable: create or update a supported verification
 - Verification tasks (T004-T006) before dependent implementation tasks when the selected strategy supports it
 - Implementation tasks must follow actual file dependencies and the chosen implementation shape
 - Constraint-preservation and design-driven state tasks block final validation when the spec, plan, or `reference-context.md` requires them
+- Preserved visual-system obligations from `reference-context.md` must be implemented before final manual validation
 - Implementation before polish (T014-T016)
 
 ## Parallel Example
@@ -106,7 +107,7 @@ Verification tasks must be executable: create or update a supported verification
 ```
 # Launch independent verification tasks together:
 Task: "[AC-001] Implement automated or manual verification for [workflow-or-outcome] in [test-file-or-quickstart-step]"
-Task: "[EC-001] Verify error, edge, validation, or accessibility behavior for [scenario] in [test-file-or-quickstart-step]"
+Task: "[EC-001] Verify error, edge, validation, accessibility, or visual-system behavior for [scenario] in [test-file-or-quickstart-step]"
 Task: "[FR-001] Verify any externally observable obligation from a justified contract or interface artifact in [verification-file-or-step]"
 ```
 
@@ -123,7 +124,7 @@ Task: "[FR-001] Verify any externally observable obligation from a justified con
 - Business rules and functional requirements from `spec.md`
 - Coverage Block and repo-reality findings from `plan.md`
 - Design artifacts from `data-model.md`, `contracts/`, and `research.md` when they exist
-- Visible states and interaction cues from `reference-context.md` when present
+- Visible states, interaction cues, and preserved visual-system obligations from `reference-context.md` when present
 
 ## Verification Strategy
 
@@ -149,7 +150,8 @@ _Applied during main() execution_
    - File paths must come from the plan's selected touched areas, not canned layouts
    - If automated verification depends on missing tooling, add setup tasks first or keep verification manual
 4. **From Scope Boundaries And Reference Context**:
-   - If `reference-context.md` exists, add tasks for loading, empty, error, validation, accessibility, responsiveness, terminal behaviors, and any source-supported value-treatment behavior when required
+   - If `reference-context.md` exists, add tasks for loading, empty, error, validation, accessibility, responsiveness, preserved visual-system styling, terminal behaviors, and any source-supported value-treatment behavior when required
+   - If `reference-context.md` preserves visual-system or style-token obligations, add at least one explicit implementation task and one manual visual-verification task for them; name the specific values from the reference in both tasks, including positional and sizing values (for example width, height, min/max constraints, padding, gap, alignment, order, and offsets) — reducing obligations to generic language is a defect
    - If the spec or plan says the feature must NOT do something, add explicit implementation or validation tasks that preserve that constraint
    - Do not infer hidden input-handling rules from visual design alone; task only behaviors that are explicitly supported by the spec, plan, or validated reference material
 5. **Ordering**:
@@ -166,7 +168,7 @@ _GATE: Checked by main() before returning_
 - [ ] Unsupported automated suites were not invented
 - [ ] Repo gaps are addressed before dependent tasks
 - [ ] Constraint-preservation tasks exist when the spec or plan forbids behavior
-- [ ] Design-driven states covered when `reference-context.md` exists
+- [ ] Design-driven states and visual-system obligations covered when `reference-context.md` exists
 - [ ] Paths follow the structure defined in `plan.md`
 - [ ] Parallel tasks truly independent
 - [ ] Each task specifies exact file path
