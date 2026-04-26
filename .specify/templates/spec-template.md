@@ -46,6 +46,7 @@ MIT License
 - ✅ Focus on WHAT users need and WHY
 - ❌ Avoid HOW to implement (no tech stack, APIs, code structure)
 - ❌ Keep design references in business language only (no implementation identifiers, source-specific handles, or file paths)
+- ❌ Do not copy tech stack, framework names, CSS declarations, component identifiers, or code structure from top-priority reference artifacts into the spec
 - ❌ Do not infer behaviors not clearly requested or validated (for example normalization, persistence, retries, background side effects, or extra navigation)
 - ✅ State scope boundaries and prohibited behaviors explicitly when the feature is limited or prototype-only
 - 👥 Written for business stakeholders, not developers
@@ -71,7 +72,7 @@ When creating this spec from a user prompt:
    - Error handling behaviors
    - Integration requirements
    - Security/compliance needs
-5. **If design references are provided**: Translate them into user-visible behavior, validation expectations, content requirements, accessibility outcomes, and responsive behavior. Do not copy implementation details from design-tool exports or code-oriented design artifacts into the spec, and do not infer hidden input-handling rules from visual design alone.
+5. **If design references are provided**: Treat all validated reference artifacts as authoritative inputs, then translate them into user-visible behavior, validation expectations, content requirements, accessibility outcomes, and responsive behavior. Do not copy implementation details from design-tool exports, CSS specs, or code-oriented design artifacts into the spec, and do not infer hidden input-handling rules from visual design alone.
 6. **If the prompt or validated reference clearly specifies how entered values are treated**: Preserve that behavior in acceptance criteria or business rules when it affects validation, matching, ordering, eligibility, or displayed output. Express it as observable or decision-relevant behavior, not as an implementation mechanism.
 7. **If the source clearly specifies exact user-facing copy**: Preserve that copy exactly in acceptance criteria, business rules, and scope boundaries unless the user explicitly asks to rewrite it.
 8. **If the prompt is short or underspecified**: Either keep explicit `[NEEDS CLARIFICATION]` markers or add narrow scope boundaries. Do not silently broaden the feature.
@@ -153,6 +154,8 @@ _GATE: Automated checks run during main() execution_
 ### Content Quality
 
 - [ ] No implementation details (languages, frameworks, APIs, implementation identifiers, or file paths)
+- [ ] No tech-stack, CSS implementation detail, or code-structure detail leaked from reference artifacts
+- [ ] No `Reference Context` analysis section embedded in `spec.md` (reference analysis belongs in `reference-context.md`)
 - [ ] Focused on user value and business needs
 - [ ] Written for non-technical stakeholders
 - [ ] Reference material translated into business language only

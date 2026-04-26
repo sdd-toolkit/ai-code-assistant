@@ -52,7 +52,8 @@ The following GitHub prompts have been successfully ported to Amazon Q format:
   - Template-based specification generation
   - Reference context support via `-ref <folder>`
   - **Optimized**: Loads reference files ONCE and splits outputs between `spec.md` and `reference-context.md`
-  - `spec.md` remains business-focused while `reference-context.md` carries supplementary design and technical context
+    - All validated files in the reference folder are treated as authoritative inputs
+    - `spec.md` remains business-focused while `reference-context.md` carries supplementary design, visual-system, and technical context
   - Integration with `.specify/scripts/bash/create-new-feature.sh`
   - Branching standards validation before feature creation
 
@@ -69,6 +70,7 @@ The following GitHub prompts have been successfully ported to Amazon Q format:
   - Constitutional requirement integration
   - **Optimized**: Uses `reference-context.md` from the feature folder when present
   - Pre-analyzed insights for consistent design decisions
+  - Preserves visual-system and style-token obligations from `reference-context.md` as explicit planning input when present
   - Absolute path handling for file operations
   - Modular constitution loading (only loads relevant sections)
 
@@ -86,6 +88,7 @@ The following GitHub prompts have been successfully ported to Amazon Q format:
   - File-based coordination rules
   - Phase-based execution (Setup → Tests → Core → Integration → Polish)
   - **Optimized**: Uses `reference-context.md` patterns from the feature folder when present
+  - Converts preserved visual-system obligations into explicit styling and manual visual-verification tasks when present
   - Applies documented conventions to task descriptions
   - Context-aware constitution loading (only loads sections relevant to task type)
 
@@ -148,7 +151,7 @@ The toolkit now uses an optimized reference context system:
 
 **After (Load Once, Reuse)**:
 
-- `@sdd-specify -ref <folder>`: Load reference files ➜ Write business-facing content to `spec.md` and supplementary context to `reference-context.md`
+- `@sdd-specify -ref <folder>`: Load validated reference files as authoritative inputs ➜ Write business-facing content to `spec.md` and supplementary context, including visual-system detail, to `reference-context.md`
 - `@sdd-plan`: Read `reference-context.md` from the feature folder when present ➜ Generate plan
 - `@sdd-tasks`: Read `reference-context.md` from the feature folder when present ➜ Generate tasks
 
@@ -158,7 +161,7 @@ The toolkit now uses an optimized reference context system:
 - 50-70% reduction in token usage
 - Faster execution times
 - Consistent context across all stages
-- Business spec stays clean while supplementary insights remain documented in `reference-context.md`
+- Business spec stays clean while supplementary design, visual-system, and technical insights remain documented in `reference-context.md`
 
 ## Usage Instructions
 

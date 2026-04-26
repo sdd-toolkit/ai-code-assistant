@@ -35,10 +35,22 @@ The user **MUST** provide a feature name. This parameter is compulsory.
    - Functional and non-functional requirements
    - Success criteria and acceptance criteria
    - Business constraints and dependencies described in the spec
-   - **If `specs/<feature-name>/reference-context.md` exists**: Load it for supplemental design, interaction, technical, and validation context
+   - **If `specs/<feature-name>/reference-context.md` exists**: Load it as top-priority supplemental design, visual-system, technical, and validation context
+     - Keep `spec.md` as the business-only source of user intent and requirements
+     - Treat preserved visual-system and style-token signals as explicit planning obligations when present
    - Perform an explicit repo-structure and tooling check before making artifact decisions
    - Derive all repo paths, commands, tooling claims, and touched areas from the current repository state and script-returned paths only
    - Treat constitution memory as the source of technical standards, verification guidance, and stack-specific constraints
+
+3.1. **Enforce Reference Context Completeness**: - If `spec.md` indicates reference-derived input (for example reference metadata or reference-context-style analysis cues) but `specs/<feature-name>/reference-context.md` is missing: STOP and ERROR with:
+
+       ```
+       ERROR: Cannot proceed with planning - missing required reference-context.md
+
+       The feature appears to be reference-driven, but specs/<feature-name>/reference-context.md was not found.
+
+       Re-run @sdd-specify <feature-description> -ref <reference-folder> and ensure reference-context.md is generated.
+       ```
 
 4. **Validate Specification Completeness**:
    - Check if the specification file (FEATURE_SPEC) contains "NEED CLARIFICATION"
@@ -92,7 +104,8 @@ The user **MUST** provide a feature name. This parameter is compulsory.
        - Phase 1 generates data-model.md and quickstart.md, plus only the smallest justified artifacts under `contracts/` when a structured contract artifact is actually needed
      - Phase 2 describes the task-generation approach (does not create tasks.md)
    - If `reference-context.md` exists, use it to enrich research, design, and quickstart outputs without changing the normal flow for features that do not have design references
-   - Ensure reference-context-driven user-visible states, validation cues, accessibility expectations, terminal behaviors, and any source-supported rules about how entered values are treated appear in `quickstart.md` and task-planning guidance when relevant
+   - Preserve validated visual-system and style-token signals from `reference-context.md` as explicit, named design obligations and manual visual-verification cues; every specific value must appear by name in planning artifacts — including positional and sizing values (for example width, height, min/max constraints, padding, gap, alignment, order, and offsets). Do not reduce reference values to vague layout summaries or generic descriptions, and do not lose any value
+   - Ensure reference-context-driven user-visible states, validation cues, accessibility expectations, responsive expectations, visual-system obligations, terminal behaviors, and any source-supported rules about how entered values are treated appear in `quickstart.md` and task-planning guidance when relevant
    - Keep repo-structure and gap detection prompt-driven in this first pass; do not require helper-script metadata beyond the current returned paths
    - Incorporate user-provided details from arguments into Technical Context
    - Maintain a lightweight Coverage Block in `plan.md` mapping `AC-*`, `FR-*`, and `EC-*` items to design and verification outputs

@@ -37,10 +37,21 @@ The user **MUST** provide a feature name. This parameter is compulsory.
    - IF EXISTS: Read contracts/ for externally observable obligations when the plan justifies them
    - IF EXISTS: Read research.md for technical decisions
    - IF EXISTS: Read quickstart.md for test scenarios
-   - IF EXISTS: Read `specs/<feature-name>/reference-context.md` for supplemental design, interaction, technical, and validation context
+   - IF EXISTS: Read `specs/<feature-name>/reference-context.md` for supplemental design, visual-system, interaction, technical, and validation context
      - Add tasks for loading, empty, error, and validation states when required
      - Add accessibility and responsiveness tasks when required
+     - Add explicit styling and manual visual-verification tasks when preserved visual-system or style-token obligations are present
      - Keep non-reference-driven features on the existing task generation path
+
+3.1. **Enforce Reference Context Completeness**: - If `spec.md` indicates reference-derived input (for example reference metadata or reference-context-style analysis cues) but `specs/<feature-name>/reference-context.md` is missing: STOP and ERROR with:
+
+       ```
+       ERROR: Cannot proceed with task generation - missing required reference-context.md
+
+       The feature appears to be reference-driven, but specs/<feature-name>/reference-context.md was not found.
+
+       Re-run @sdd-specify <feature-description> -ref <reference-folder> and ensure reference-context.md is generated.
+       ```
 
 4. **Validate Plan Completeness**:
    - Check if the plan.md file contains "NEED CLARIFICATION"
@@ -86,7 +97,7 @@ The user **MUST** provide a feature name. This parameter is compulsory.
      - **Verification tasks [P]**: Constitution-supported automated checks or explicit manual validation steps
      - **Implementation tasks**: Workflows, rules, interfaces, states, and constraint-preservation work
      - **Integration tasks**: Cross-boundary or cross-cutting behavior only when required by the plan
-     - **Design-driven tasks**: State handling, accessibility, responsiveness, and terminal behavior when `reference-context.md` requires them
+     - **Design-driven tasks**: State handling, accessibility, responsiveness, preserved visual-system styling, and terminal behavior when `reference-context.md` requires them
      - **Polish tasks [P]**: Final verification, docs, and justified follow-up checks
    - Tasks must be executable changes or concrete verification runs; do not emit read-only review, analysis, or "lock requirements" tasks as substitutes for work
 
@@ -95,8 +106,9 @@ The user **MUST** provide a feature name. This parameter is compulsory.
    - Use constitution-aware verification guidance; do not generate unsupported automated suites
    - If project standards allow only unit tests, do not generate contract, integration, or e2e suites
    - If no backend/API exists, do not generate endpoint, middleware, repository, or DB tasks
-   - If the feature is UI-only, favor component, styling, validation, accessibility, and manual-scenario tasks
-   - If `reference-context.md` identifies user-visible states, validation behavior, or source-supported rules about how entered values are treated, add implementation and verification tasks for them
+   - If the feature is UI-only, favor component, styling, validation, accessibility, visual-system, and manual-scenario tasks
+   - If `reference-context.md` identifies user-visible states, validation behavior, visual-system obligations, or source-supported rules about how entered values are treated, add implementation and verification tasks for them
+   - If `reference-context.md` preserves visual-system or style-token requirements, add at least one explicit implementation task and one manual visual-verification task for them; each task must name the specific values from the reference that must be applied or confirmed, including positional and sizing values (for example width, height, min/max constraints, padding, gap, alignment, order, and offsets) — reducing obligations to generic language such as "style the form" or "add responsive behavior" is a defect
    - If the spec, plan, or design artifacts define source-supported value-treatment behavior that changes validation, matching, ordering, eligibility, or user-visible output, add at least one implementation task and one verification task for that behavior
    - If the spec or plan says the feature must NOT do something, add explicit constraint-preservation tasks
    - Do not invent hidden input-handling rules from visual design alone, and do not generate tasks for behaviors that are not explicitly supported by the spec, plan, or validated reference material

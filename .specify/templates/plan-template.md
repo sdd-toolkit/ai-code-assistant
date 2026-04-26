@@ -15,10 +15,12 @@ MIT License
    → If not found: ERROR "No feature spec at {path}"
 2. Fill Summary, Technical Context, and Repo Reality Check (scan for NEEDS CLARIFICATION)
    → Use constitution memory, repository context, research, and optional reference-context.md for implementation details
+   → Treat preserved visual-system and style-token signals in reference-context.md as explicit design obligations when present
    → Identify existing entry points, touched areas, verification tooling, and missing prerequisites from the current repo
    → Use only current repo-root paths, commands, and detected tooling; do not reuse assumptions from earlier runs or other workspaces
    → Reject any foreign absolute path in persistent artifacts; use current workspace-derived paths only when an absolute path is truly required
    → State the smallest plausible implementation shape before proposing new structure
+   → If `spec.md` indicates reference-derived input but `reference-context.md` is missing: ERROR "Missing required reference-context.md for reference-driven feature"
 3. Fill the Constitution Check section based on the content of the constitution document.
 4. Evaluate Constitution Check section below
    → If violations exist: Document in Complexity Tracking
@@ -115,7 +117,7 @@ Do not invent `models`, `services`, `api`, `repository`, `middleware`, or simila
    - For each dependency → best practices task
    - For each integration → patterns task
    - For each missing prerequisite → confirm whether it is required now or can be deferred
-   - If `reference-context.md` exists: Extract design and interaction signals that affect research or implementation choices
+   - If `reference-context.md` exists: Extract design, interaction, and visual-system signals that affect research or implementation choices
 
 2. **Generate and dispatch research agents**:
 
@@ -153,12 +155,13 @@ _Prerequisites: research.md complete_
    - Identify what the repo can already verify automatically and what must be validated manually
    - If required tooling is missing, record the gap instead of assuming it exists
    - Do not assume test-first or harness-specific verification unless the repo already supports it or setup work is explicitly justified
+   - If `reference-context.md` preserves visual-system or style-token obligations, add explicit manual visual-verification expectations that name the specific values to be verified, including positional and sizing values (for example width, height, min/max constraints, padding, gap, alignment, order, and offsets); do not reduce preserved reference values to generic layout descriptions, and do not lose any value
    - Capture verification expectations in `quickstart.md`, the Coverage Block, and task-planning guidance
    - Do not create implementation-side test files during /plan
 
 4. **Extract test scenarios** from user stories and optional reference context:
    - Map each acceptance criterion, functional requirement, and edge case to a verification path
-   - User-visible states, validation cues, and any source-supported rules about how entered values are treated from `spec.md` or `reference-context.md` → quickstart and verification scenarios when present
+   - User-visible states, validation cues, responsive expectations, visual-system obligations, and any source-supported rules about how entered values are treated from `spec.md` or `reference-context.md` → quickstart and verification scenarios when present
    - Quickstart = story validation steps plus relevant state, validation, accessibility, and terminal-behavior coverage
 
 5. **Maintain the Coverage Block in this plan**:

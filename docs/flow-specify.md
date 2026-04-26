@@ -30,7 +30,7 @@ flowchart TD
 
     PopulateSpec --> CheckRefContext{Reference<br/>context exists?}
 
-    CheckRefContext -->|Yes| CreateRefContext[Create reference-context.md:<br/>- Business-Relevant Signals<br/>- Design & Interaction Signals<br/>- Technical Observations<br/>- Validation & Testing Signals]
+    CheckRefContext -->|Yes| CreateRefContext[Create reference-context.md:<br/>- Business-Relevant Signals<br/>- Design & Interaction Signals<br/>- Visual System / Style Tokens<br/>- Technical Observations<br/>- Validation & Testing Signals]
     CheckRefContext -->|No| CreateSpec[Create spec.md in<br/>specs/feature-name/]
 
     CreateRefContext --> CreateSpec
@@ -46,10 +46,10 @@ flowchart TD
 
 ## Key Decision Points
 
-1. **Reference Folder**: Optional context for enhanced specifications using `-ref <folder-name>`
+1. **Reference Folder**: Optional context for enhanced specifications using `-ref <folder-name>`; all validated files in the folder are authoritative inputs when used
 2. **Branch Validation**: Critical checkpoint - must comply with standards
 3. **Post-Script Validation**: Ensures generated branch name still complies
-4. **Reference Context**: Stored in `reference-context.md` for reuse by @sdd-plan and @sdd-tasks
+4. **Reference Context**: Stored in `reference-context.md` for reuse by @sdd-plan and @sdd-tasks, including preserved visual-system and style-token signals
 
 ## Command Usage
 
@@ -64,7 +64,7 @@ flowchart TD
 ## Output Files
 
 - `specs/feature-name/spec.md` - Feature specification
-- `specs/feature-name/reference-context.md` - Supplemental context from reference inputs (optional)
+- `specs/feature-name/reference-context.md` - Supplemental design, visual-system, and technical context from reference inputs (optional)
 - Directory name follows branch naming convention: `type/feature-description`
 
 **Note**: Create your git branch manually if desired:
