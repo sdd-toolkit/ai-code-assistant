@@ -1,6 +1,6 @@
 # LLM Specification Driven Development Toolkit - Installation Guide
 
-A vendor-neutral installation guide for setting up SDD prompts with GitHub Copilot (primary) and Amazon Q Developer (alternative).
+A vendor-neutral installation guide for setting up SDD prompts with GitHub Copilot (primary), Claude Code (alternative), and Amazon Q Developer (alternative).
 
 ## Quick Install
 
@@ -91,6 +91,94 @@ Write-Host "✅ SDD Toolkit installation complete!" -ForegroundColor Green
 - Copies all prompt files with `.prompt.md` extension (Copilot requirement)
 - Runtime prompt source of truth is `prompts/*.md` in the toolkit repository; installed prompt files are generated copies
 - `.specify/` folder downloaded and extracted to temporary location
+- Copies the complete `.specify/` directory structure to your project (excludes `git-workflow.yaml` on first install, preserves existing `memory/` folder on updates)
+- All subsequent prompt invocations will use the local `.specify/` configuration
+- Cleans up temporary files
+
+Next: Continue with the Quick Start in the README to generate your first spec: see [README.md#quick-start](./README.md#quick-start).
+
+### Claude Code (Project-Local)
+
+**Zsh:**
+
+```bash
+TEMP_DIR="/tmp/sdd-toolkit-install-$$" && \
+git clone --depth 1 https://github.com/sdd-toolkit/ai-code-assistant.git "$TEMP_DIR" && \
+mkdir -p .claude/commands && \
+for file in "$TEMP_DIR"/prompts/*.md; do \
+  sed -e 's/{{SCRIPT_EXT}}/.sh/g' -e 's/{{SCRIPT_LANG}}/bash/g' "$file" > .claude/commands/"$(basename "$file")"; \
+done && \
+if [ ! -d .specify ]; then \
+  rsync -av --exclude='memory/git-workflow.yaml' "$TEMP_DIR"/.specify/ .specify/; \
+else \
+  rsync -av --exclude='memory/' "$TEMP_DIR"/.specify/ .specify/; \
+fi && \
+mkdir -p .specify/memory specs && \
+rm -rf "$TEMP_DIR"
+```
+
+**PowerShell:**
+
+```powershell
+# Cross-platform temp directory
+$tempPath = if ($IsWindows -or $env:OS -eq "Windows_NT") {
+    $env:TEMP
+} else {
+    if ($env:TMPDIR) { $env:TMPDIR } else { "/tmp" }
+}
+$tempDir = Join-Path $tempPath "sdd-toolkit-install-$(Get-Random)"
+
+# Clone repository
+git clone --depth 1 https://github.com/sdd-toolkit/ai-code-assistant.git $tempDir
+
+# Create .claude/commands directory
+$claudeCommandsDir = Join-Path ".claude" "commands"
+New-Item -ItemType Directory -Force -Path $claudeCommandsDir | Out-Null
+
+# Process prompts
+$promptsDir = Join-Path $tempDir "prompts"
+Get-ChildItem (Join-Path $promptsDir "*.md") | ForEach-Object {
+    $outputPath = Join-Path $claudeCommandsDir $_.Name
+    (Get-Content $_.FullName -Raw -Encoding UTF8) `
+        -replace '{{SCRIPT_EXT}}','.ps1' `
+        -replace '{{SCRIPT_LANG}}','powershell' | `
+        Set-Content $outputPath -Encoding UTF8
+}
+
+# Handle .specify directory
+$sourceSpecifyDir = Join-Path $tempDir ".specify"
+if (-not (Test-Path ".specify")) {
+    Copy-Item $sourceSpecifyDir ".specify" -Recurse -Force
+    $memorySourceDir = Join-Path $sourceSpecifyDir "memory"
+    if (Test-Path $memorySourceDir) {
+        $memoryDestDir = Join-Path ".specify" "memory"
+        New-Item -ItemType Directory -Force -Path $memoryDestDir | Out-Null
+        Get-ChildItem $memorySourceDir | Where-Object { $_.Name -ne "git-workflow.yaml" } | Copy-Item -Destination $memoryDestDir -Recurse -Force
+    }
+    $destMemoryDir = Join-Path ".specify" "memory"
+    $excludeFile = Join-Path $destMemoryDir "git-workflow.yaml"
+    if (Test-Path $excludeFile) { Remove-Item -Force $excludeFile }
+} else {
+    Get-ChildItem $sourceSpecifyDir | Where-Object { $_.Name -ne "memory" } | Copy-Item -Destination ".specify" -Recurse -Force
+}
+
+# Ensure required directories exist
+New-Item -ItemType Directory -Force -Path (Join-Path ".specify" "memory") | Out-Null
+New-Item -ItemType Directory -Force -Path "specs" | Out-Null
+
+# Cleanup
+Remove-Item -Recurse -Force $tempDir
+
+Write-Host "✅ SDD Toolkit installation complete!" -ForegroundColor Green
+```
+
+**What this does:**
+
+- Clones the latest toolkit from GitHub
+- Creates `.claude/commands/` directory in your project
+- Replaces placeholders (`{{SCRIPT_EXT}}` and `{{SCRIPT_LANG}}`) with appropriate values for your shell
+- Copies all prompt files with plain `.md` extension (Claude Code requirement — no rename needed)
+- Runtime prompt source of truth is `prompts/*.md` in the toolkit repository; installed prompt files are generated copies
 - Copies the complete `.specify/` directory structure to your project (excludes `git-workflow.yaml` on first install, preserves existing `memory/` folder on updates)
 - All subsequent prompt invocations will use the local `.specify/` configuration
 - Cleans up temporary files
@@ -258,9 +346,15 @@ ls -la .github/prompts/
 ls -la ~/.aws/amazonq/prompts/
 ```
 
+**Claude Code:**
+
+```bash
+ls -la .claude/commands/
+```
+
 You should see the following prompts: `sdd-audit.md`, `sdd-init.md`, `sdd-drift.md`, `sdd-implement.md`, `sdd-plan.md`, `sdd-specify.md`, `sdd-tasks.md`
 
-(Note: GitHub Copilot prompts will have `.prompt.md` extension)
+(Note: GitHub Copilot prompts will have `.prompt.md` extension; Claude Code and Amazon Q use plain `.md`)
 
 ## Quick Test
 
@@ -290,17 +384,19 @@ Type `@sdd-init` in your IDE to test the installation and create your project co
 
 ## Available Prompts
 
-- `@sdd-audit` - Generate compliance audit and TODO list
-- `@sdd-init` - Update project constitution with versioning
-- `@sdd-drift` - Detect specification drift and validate implementation
-- `@sdd-specify` - Create feature specifications from descriptions
-- `@sdd-plan` - Generate implementation plans and design artifacts
-- `@sdd-tasks` - Create dependency-ordered task breakdowns
-- `@sdd-implement` - Execute implementation following task plan
+- `@sdd-audit` / `/sdd-audit` - Generate compliance audit and TODO list
+- `@sdd-init` / `/sdd-init` - Update project constitution with versioning
+- `@sdd-drift` / `/sdd-drift` - Detect specification drift and validate implementation
+- `@sdd-specify` / `/sdd-specify` - Create feature specifications from descriptions
+- `@sdd-plan` / `/sdd-plan` - Generate implementation plans and design artifacts
+- `@sdd-tasks` / `/sdd-tasks` - Create dependency-ordered task breakdowns
+- `@sdd-implement` / `/sdd-implement` - Execute implementation following task plan
+
+(Use `@sdd-*` prefix for Amazon Q; use `/sdd-*` prefix for GitHub Copilot & Claude Code)
 
 ## Prerequisites
 
-- GitHub Copilot or Amazon Q Developer extension installed in your IDE
+- GitHub Copilot, Amazon Q Developer, or Claude Code extension installed in your IDE
 - Project with `.specify/` directory structure
 - macOS, Linux, or WSL environment with zsh/bash shell access
 
@@ -340,6 +436,12 @@ The `.specify/` directory is automatically created when you first use the prompt
 - Check file permissions: `chmod 644 ~/.aws/amazonq/prompts/*.md`
 - Restart your IDE after installation
 
+**Commands not found in Claude Code:**
+
+- Ensure prompt files are in `.claude/commands/` in your project root
+- Verify files have plain `.md` extension (not `.prompt.md`)
+- Restart your IDE after installation
+
 **Script errors:**
 
 - Ensure you're in the project root directory
@@ -363,6 +465,12 @@ rm -rf .github/prompts
 
 ```bash
 rm -rf ~/.aws/amazonq/prompts
+```
+
+**Remove Claude Code commands:**
+
+```bash
+rm -rf .claude/commands
 ```
 
 ## Updating to Latest Version
@@ -453,6 +561,47 @@ Copy-Item -Recurse -Force "$env:TEMP\ai-code-assistant\.specify\templates" ".spe
 Copy-Item -Recurse -Force "$env:TEMP\ai-code-assistant\.specify\scripts" ".specify\"
 Remove-Item -Recurse -Force "$env:TEMP\ai-code-assistant"
 Write-Host "✅ GitHub Copilot prompts and .specify directory updated successfully!"
+```
+
+#### Claude Code (Project-Local)
+
+**Bash:**
+
+```bash
+TEMP_DIR="/tmp/sdd-toolkit-install-$$" && \
+git clone --depth 1 https://github.com/sdd-toolkit/ai-code-assistant.git "$TEMP_DIR" && \
+rm -rf .claude/commands/*.md && \
+mkdir -p .claude/commands && \
+for file in "$TEMP_DIR"/prompts/*.md; do \
+  sed -e 's/{{SCRIPT_EXT}}/.sh/g' -e 's/{{SCRIPT_LANG}}/bash/g' "$file" > .claude/commands/"$(basename "$file")"; \
+done && \
+rm -rf .specify/templates .specify/scripts && \
+cp -r "$TEMP_DIR"/.specify/templates .specify/ && \
+cp -r "$TEMP_DIR"/.specify/scripts .specify/ && \
+rm -rf "$TEMP_DIR" && \
+echo "✅ Claude Code commands and .specify directory updated successfully!"
+```
+
+**PowerShell:**
+
+```powershell
+$tempPath = if ($IsWindows -or $env:OS -eq "Windows_NT") { $env:TEMP } else { if ($env:TMPDIR) { $env:TMPDIR } else { "/tmp" } }
+$tempDir = Join-Path $tempPath "sdd-toolkit-install-$(Get-Random)"
+git clone --depth 1 https://github.com/sdd-toolkit/ai-code-assistant.git $tempDir
+Remove-Item ".claude\commands\*.md" -Force -ErrorAction SilentlyContinue
+New-Item -ItemType Directory -Force -Path ".claude\commands" | Out-Null
+Get-ChildItem (Join-Path $tempDir "prompts\*.md") | ForEach-Object {
+    $outputPath = Join-Path ".claude\commands" $_.Name
+    (Get-Content $_.FullName -Raw -Encoding UTF8) `
+        -replace '{{SCRIPT_EXT}}','.ps1' `
+        -replace '{{SCRIPT_LANG}}','powershell' | `
+        Set-Content $outputPath -Encoding UTF8
+}
+Remove-Item -Recurse -Force ".specify\templates",".specify\scripts" -ErrorAction SilentlyContinue
+Copy-Item -Recurse -Force (Join-Path $tempDir ".specify\templates") ".specify\"
+Copy-Item -Recurse -Force (Join-Path $tempDir ".specify\scripts") ".specify\"
+Remove-Item -Recurse -Force $tempDir
+Write-Host "✅ Claude Code commands and .specify directory updated successfully!" -ForegroundColor Green
 ```
 
 **Note:** The update commands will:
