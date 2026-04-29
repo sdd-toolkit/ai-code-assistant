@@ -1,6 +1,6 @@
 # LLM Specification Driven Development (SDD) Toolkit
 
-Specification Driven Development (SDD) workflow toolkit for collaborating with AI coding assistants—GitHub Copilot (primary) and Amazon Q Developer (alternative)—using consistent prompts and a spec→plan→tasks→implement loop.
+Specification Driven Development (SDD) workflow toolkit for collaborating with AI coding assistants—GitHub Copilot, Amazon Q Developer, and Claude Code—using consistent prompts and a spec→plan→tasks→implement loop.
 
 ## About
 
@@ -12,8 +12,8 @@ This toolkit packages that flow into markdown prompts and helper scripts for mul
 
 ### Workflow Excellence
 
-- Multi-vendor prompt distribution (Amazon Q + GitHub Copilot) with identical semantics
-- Unified command-style verbs (`@sdd-specify`, `@sdd-plan`, `@sdd-tasks`, `@sdd-implement`, etc.)
+- Multi-vendor prompt distribution (Amazon Q + GitHub Copilot + Claude Code) with identical semantics
+- Unified command-style verbs (`@sdd-*` for Amazon Q; `/sdd-*` for GitHub Copilot & Claude Code)
 - Reference folder mechanism (`@sdd-specify <description> -ref <folder>`) to inject structured domain context
 - Consistent, auditable, specification-first workflow across different AI assistants
 
@@ -57,9 +57,12 @@ This is a clean, modern implementation designed for simplicity and clarity from 
 
 ## Quick Start
 
-1. **Install prompts (GitHub Copilot):**
+1. **Install prompts:**
 
-Use the project-local install in the Installation Guide: see [INSTALL.md — GitHub Copilot (Project-Local)](./INSTALL.md#github-copilot-project-local--recommended).
+Choose your AI assistant in the Installation Guide:
+- GitHub Copilot: [INSTALL.md — GitHub Copilot (Project-Local)](./INSTALL.md#github-copilot-project-local--recommended)
+- Claude Code: [INSTALL.md — Claude Code (Project-Local)](./INSTALL.md#claude-code-project-local)
+- Amazon Q: [INSTALL.md — Amazon Q Developer (Global)](./INSTALL.md#alternative-amazon-q-developer-global)
 
 2. **Start developing:**
 
